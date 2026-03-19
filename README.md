@@ -11,10 +11,10 @@
 
 ## 📋 פרטי ההגשה
 
-| שם מגיש | תעודת זהות | תפקיד/חלק בפרויקט |
+| שם מגיש | תעודת זהות |
 | :--- | :---: | :--- |
-| **ישראל ישראלי** | 3553 | ארכיטקטורת נתונים וכתיבת סקריפטים (Python) |
-| **משה כהן** | 4459 | עיצוב מסד הנתונים, ERD ואילוצי SQL |
+| **יאיר חיים זיו** | 3553 |
+| **אמיתי אברהם יושעי** | 4459 |
 
 * **היחידה הנבחרת מתוך המערכת:** ניהול ומעקב אישי - מתאמנים, מדדי גוף, תוכניות ויומני אימון.
 
@@ -35,7 +35,7 @@
 
 ## 💻 מסכי המערכת (Mockups)
 <p align="center">
-  <img src="LINK_TO_DASHBOARD_IMAGE" width="600" alt="Trainee Dashboard" />
+  <img src="https://github.com/user-attachments/assets/1261cfd8-0f36-48ce-a40d-3353fee654e3" width="600" alt="Trainee Dashboard" />
   <br />
   <i>מסך דשבורד מתאמן המציג את תמונת המצב העדכנית</i>
 </p>
@@ -44,8 +44,9 @@
   <summary><b>לחץ כאן לצפייה בשאר מסכי המערכת</b></summary>
   <br/>
   <p align="center">
-    <img src="LINK_TO_MEASUREMENTS_IMAGE" width="45%" alt="Measurements" />
-    <img src="LINK_TO_PROGRAM_IMAGE" width="45%" alt="Workout Program" />
+    <img src="https://github.com/user-attachments/assets/fde4bbc7-9786-4aeb-a1b3-44e712f4b2cb" width="45%" alt="Measurements" />
+    <img src="https://github.com/user-attachments/assets/f71a9f0d-6a92-42eb-8e79-240615bc0415" width="45%" alt="Workout Program" />
+    <img src="https://github.com/user-attachments/assets/ddb79232-1b82-41d2-9846-554a4f93cb30" width="45%" alt="Workout Log" />
   </p>
 </details>
 
@@ -55,12 +56,12 @@
 
 ### תרשים ERD (מושגי)
 <p align="center">
-  <img src="LINK_TO_ERD_IMAGE" width="800" alt="ERD Diagram" />
+  <img src="https://github.com/user-attachments/assets/8b04b38b-1800-4935-a9b4-71bf9b871be8" width="800" alt="ERD Diagram" />
 </p>
 
 ### תרשים DSD (לוגי)
 <p align="center">
-  <img src="LINK_TO_DSD_IMAGE" width="800" alt="DSD Diagram" />
+  <img src="https://github.com/user-attachments/assets/e8915f6c-a453-4dd4-a8cd-f64af687adcf" width="800" alt="DSD Diagram" />
 </p>
 
 <hr />
@@ -80,7 +81,9 @@
 3. **הכנסה ידנית ב-SQL:** כתיבת שאילתות ידניות עבור טבלאות תשתית קטנות.
 
 <p align="center">
-  <img src="LINK_TO_DATA_INSERT_IMAGE" width="600" alt="Data Insertion" />
+  <img src="LINK_TO_DATA_INSERT_IMAGE" width="600" alt="Data Insertion Via Python Scripts" />
+  <img src="LINK_TO_DATA_INSERT_IMAGE" width="600" alt="Data Insertion Via Mockaroo Generator" />
+  <img src="LINK_TO_DATA_INSERT_IMAGE" width="600" alt="Data Insertion Via SQL" />
 </p>
 
 <hr />
@@ -91,9 +94,9 @@
   <br/>
   <p align="center">
     <b>גיבוי:</b><br/>
-    <img src="LINK_TO_BACKUP_IMAGE" width="600" alt="Backup Process" />
+    <img src="https://github.com/user-attachments/assets/241a1901-9aa3-4a82-aa74-038024cee2d7" width="600" alt="Backup Process" />
     <br/><br/>
     <b>שחזור:</b><br/>
-    <img src="LINK_TO_RESTORE_IMAGE" width="600" alt="Restore Process" />
+    <img src="https://github.com/user-attachments/assets/190bbfc4-4e47-45b8-adf4-2605f4a4c339" width="600" alt="Restore Process" />
   </p>
 </details>
