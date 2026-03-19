@@ -76,14 +76,25 @@
 ## ⚙️ שיטות הכנסת נתונים
 כדי למלא את מסד הנתונים בכמויות המידע הנדרשות (מעל 40,000 שורות סך הכל), השתמשנו ב-3 שיטות שונות:
 
-1. **תכנות (Python Scripts):** יצירת יומני אימון ומדידות גוף בעזרת סקריפטים שמייצאים קבצי CSV.
-2. **מחולל נתונים חיצוני (Mockaroo):** יצירת מידע אקראי מציאותי כמו שמות והצהרות בריאות.
-3. **הכנסה ידנית ב-SQL:** כתיבת שאילתות ידניות עבור טבלאות תשתית קטנות.
-
+### 1. תכנות (Python Scripts)
+כתיבת סקריפטים בשפת פייתון כדי לייצר בצורה אוטומטית פקודות SQL (שאילתות `INSERT`) המוניות. שיטה זו שימשה אותנו ליצירת עשרות אלפי רשומות לוגיות מחושבות, כמו יומני אימון ומדידות גוף (כולל חישובי BMI אוטומטיים).
 <p align="center">
-  <img src="LINK_TO_DATA_INSERT_IMAGE" width="600" alt="Data Insertion Via Python Scripts" />
-  <img src="LINK_TO_DATA_INSERT_IMAGE" width="600" alt="Data Insertion Via Mockaroo Generator" />
-  <img src="LINK_TO_DATA_INSERT_IMAGE" width="600" alt="Data Insertion Via SQL" />
+  <img src="https://github.com/user-attachments/assets/553bcb60-f615-4712-bcef-c180ffeb5486" width="600" alt="Data Insertion Via Python Scripts" />
+</p>
+<br/>
+
+
+### 2. מחולל נתונים חיצוני (Mockaroo)
+שימוש בכלי Mockaroo ליצירת מידע אקראי מציאותי. בעזרת מחולל זה יצרנו נתונים אנושיים שקשה לפברק ידנית בכמויות גדולות, כגון שמות מתאמנים, תאריכי לידה והצהרות בריאות.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a45471c0-dfc0-4a4f-a5ee-c5196f63ac7b" width="600" alt="Data Insertion Via Mockaroo Generator" />
+</p>
+<br/>
+
+### 3. ייבוא נתונים מקבצים (CSV Import)
+קליטת נתונים מרוכזת דרך הממשק של מסד הנתונים. יצרנו והכנו מראש קבצי CSV מסודרים המכילים נתוני תשתית ומידע טבלאי, וביצענו להם ייבוא ישיר (Import) לתוך הטבלאות המתאימות במערכת.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1a139102-7e9e-4715-91e7-59a31cb49f6f" width="600" alt="Data Insertion Via CSV" />
 </p>
 
 <hr />
