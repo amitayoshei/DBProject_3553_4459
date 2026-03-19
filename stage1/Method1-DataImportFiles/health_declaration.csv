@@ -1,0 +1,501 @@
+declaration_id,issue_date,expiry_date,doctor_name,limitations_notes,is_valid,trainee_id
+1,2024-05-02,2025-05-02,Dr. Jamie Warlton,Mild asthma - needs inhaler before cardio,1,1
+2,2026-01-13,2027-01-13,Dr. Jeanette Vasilik,Cleared for all activities,1,2
+3,2024-05-21,2025-05-21,Dr. Horace Ferguson,Sensitive wrists - use wraps for pressing movements,1,3
+4,2024-08-17,2025-08-17,Dr. Garwin Snazel,Sensitive wrists - use wraps for pressing movements,1,4
+5,2024-04-06,2025-04-06,Dr. Anthea Piccard,Cleared for all activities,1,5
+6,2024-06-16,2025-06-16,Dr. Lauretta Rickards,Cleared for all activities,1,6
+7,2024-05-06,2025-05-06,Dr. Wilbert Gomersal,Cleared for all activities,1,7
+8,2024-09-08,2025-09-08,Dr. Charlean Isbell,Mild asthma - needs inhaler before cardio,1,8
+9,2026-01-06,2027-01-06,Dr. Kellen Sciusscietto,High blood pressure - monitor heart rate,1,9
+10,2025-02-27,2026-02-27,Dr. Jose Deverock,Lower back pain - modify deadlift weights,1,10
+11,2024-12-23,2025-12-23,Dr. Silvain Mellenby,Cleared for all activities,1,11
+12,2025-03-26,2026-03-26,Dr. Benjamin Chamney,Cleared for all activities,1,12
+13,2024-03-14,2025-03-14,Dr. Christian Diplock,Cleared for all activities,1,13
+14,2025-05-11,2026-05-11,Dr. Ashlee Vayro,Cleared for all activities,1,14
+15,2024-11-18,2025-11-18,Dr. Nev Fibbens,Cleared for all activities,1,15
+16,2024-05-11,2025-05-11,Dr. Maribeth Filpi,Sensitive wrists - use wraps for pressing movements,1,16
+17,2024-02-29,2025-02-28,Dr. Sigismund Foucher,Cleared for all activities,0,17
+18,2025-07-07,2026-07-07,Dr. Kitty Rosewarne,Cleared for all activities,1,18
+19,2025-05-15,2026-05-15,Dr. Hubert Taaffe,Cleared for all activities,1,19
+20,2026-02-10,2027-02-10,Dr. Didi Verry,Cleared for all activities,1,20
+21,2025-12-01,2026-12-01,Dr. Kale Woodford,Mild asthma - needs inhaler before cardio,1,21
+22,2024-05-10,2025-05-10,Dr. Cris Wandrich,Cleared for all activities,0,22
+23,2024-09-18,2025-09-18,Dr. Nani Luffman,High blood pressure - monitor heart rate,1,23
+24,2025-10-23,2026-10-23,Dr. Luella Dungate,Sensitive wrists - use wraps for pressing movements,0,24
+25,2024-07-05,2025-07-05,Dr. Rhea Howse,Cleared for all activities,0,25
+26,2025-05-22,2026-05-22,Dr. Filmer Furmston,Sensitive wrists - use wraps for pressing movements,1,26
+27,2024-07-30,2025-07-30,Dr. Lynette Bartot,Sensitive wrists - use wraps for pressing movements,1,27
+28,2024-01-25,2025-01-25,Dr. Lanny Comrie,Sensitive wrists - use wraps for pressing movements,1,28
+29,2025-01-09,2026-01-09,Dr. Debera Andrusyak,Sensitive wrists - use wraps for pressing movements,1,29
+30,2024-09-03,2025-09-03,Dr. Kendricks Sinisbury,Cleared for all activities,1,30
+31,2024-07-06,2025-07-06,Dr. Sam Van T'Hoog,Cleared for all activities,1,31
+32,2025-12-20,2026-12-20,Dr. Roxy Dooley,Sensitive wrists - use wraps for pressing movements,1,32
+33,2024-07-20,2025-07-20,Dr. Tabbi Herion,Mild asthma - needs inhaler before cardio,1,33
+34,2025-05-26,2026-05-26,Dr. Larisa Leahair,Sensitive wrists - use wraps for pressing movements,1,34
+35,2025-01-06,2026-01-06,Dr. Lawton Jarrette,Lower back pain - modify deadlift weights,1,35
+36,2026-03-05,2027-03-05,Dr. Alfreda Rozenbaum,Mild asthma - needs inhaler before cardio,1,36
+37,2025-04-07,2026-04-07,Dr. Ellswerth Capelin,Cleared for all activities,1,37
+38,2025-01-16,2026-01-16,Dr. Chiquia Gaitley,Mild asthma - needs inhaler before cardio,1,38
+39,2024-09-27,2025-09-27,Dr. Rafael Mc Pake,Cleared for all activities,1,39
+40,2024-04-15,2025-04-15,Dr. Sidnee Normant,Cleared for all activities,1,40
+41,2025-09-14,2026-09-14,Dr. Grange Lafflina,Mild asthma - needs inhaler before cardio,1,41
+42,2025-04-07,2026-04-07,Dr. Sharleen Ferronet,High blood pressure - monitor heart rate,1,42
+43,2024-03-11,2025-03-11,Dr. Lura Meighan,Cleared for all activities,1,43
+44,2024-10-03,2025-10-03,Dr. Edvard Scud,Sensitive wrists - use wraps for pressing movements,0,44
+45,2025-07-29,2026-07-29,Dr. Felice Champneys,Lower back pain - modify deadlift weights,0,45
+46,2025-05-28,2026-05-28,Dr. Astra Libreros,Cleared for all activities,1,46
+47,2025-10-09,2026-10-09,Dr. Cammy Botger,Cleared for all activities,1,47
+48,2024-03-23,2025-03-23,Dr. Melantha Ygou,Cleared for all activities,1,48
+49,2026-01-13,2027-01-13,Dr. Johnny Dericot,Sensitive wrists - use wraps for pressing movements,1,49
+50,2024-11-22,2025-11-22,Dr. Ingaberg Scarlon,Lower back pain - modify deadlift weights,1,50
+51,2024-03-10,2025-03-10,Dr. Virgina Erett,Cleared for all activities,1,51
+52,2025-09-20,2026-09-20,Dr. Bettine Tothe,Lower back pain - modify deadlift weights,1,52
+53,2024-09-12,2025-09-12,Dr. Alli Bonnesen,Cleared for all activities,0,53
+54,2026-03-13,2027-03-13,Dr. Kristien Perham,Cleared for all activities,0,54
+55,2024-10-27,2025-10-27,Dr. Laina Ahrenius,Cleared for all activities,1,55
+56,2024-11-20,2025-11-20,Dr. Findley Truitt,Cleared for all activities,1,56
+57,2025-09-14,2026-09-14,Dr. Maryrose Niccols,Cleared for all activities,1,57
+58,2024-08-07,2025-08-07,Dr. Sholom Camps,Cleared for all activities,1,58
+59,2025-11-04,2026-11-04,Dr. Corenda Zold,Cleared for all activities,1,59
+60,2024-07-15,2025-07-15,Dr. Guido Zamorano,Cleared for all activities,0,60
+61,2025-04-19,2026-04-19,Dr. Maura Melarkey,High blood pressure - monitor heart rate,0,61
+62,2024-02-03,2025-02-03,Dr. Dulcea Lorens,Cleared for all activities,1,62
+63,2024-02-07,2025-02-07,Dr. Dido Fitzroy,Cleared for all activities,1,63
+64,2025-05-24,2026-05-24,Dr. Greta Baldery,Sensitive wrists - use wraps for pressing movements,1,64
+65,2025-12-22,2026-12-22,Dr. Quentin Westcot,Cleared for all activities,1,65
+66,2025-06-20,2026-06-20,Dr. Deane Fernley,Cleared for all activities,0,66
+67,2025-12-26,2026-12-26,Dr. Tootsie Ormistone,High blood pressure - monitor heart rate,1,67
+68,2024-11-18,2025-11-18,Dr. Andie Jagg,Cleared for all activities,1,68
+69,2024-04-06,2025-04-06,Dr. Benny Philipps,Cleared for all activities,1,69
+70,2025-04-10,2026-04-10,Dr. Nick Chinn,Cleared for all activities,0,70
+71,2024-11-25,2025-11-25,Dr. Florentia Fearon,Recovering from shoulder injury - no overhead press,1,71
+72,2024-04-24,2025-04-24,Dr. Erna Skett,Mild asthma - needs inhaler before cardio,1,72
+73,2024-11-27,2025-11-27,Dr. Knox Gilcriest,Cleared for all activities,0,73
+74,2024-11-21,2025-11-21,Dr. Madelin Lehrle,Cleared for all activities,1,74
+75,2024-03-18,2025-03-18,Dr. Jacquetta Josovitz,Sensitive wrists - use wraps for pressing movements,1,75
+76,2024-05-01,2025-05-01,Dr. Tome Catterick,Sensitive wrists - use wraps for pressing movements,1,76
+77,2024-03-16,2025-03-16,Dr. Bartholomeo Cato,Cleared for all activities,1,77
+78,2025-04-10,2026-04-10,Dr. Alic Gwyther,Sensitive wrists - use wraps for pressing movements,1,78
+79,2025-08-23,2026-08-23,Dr. Oran Jozwik,Cleared for all activities,1,79
+80,2024-07-22,2025-07-22,Dr. Kennan Ferraresi,Recovering from shoulder injury - no overhead press,1,80
+81,2025-08-15,2026-08-15,Dr. Kimbra Schlag,Cleared for all activities,1,81
+82,2024-12-13,2025-12-13,Dr. Conchita Henric,Cleared for all activities,1,82
+83,2024-10-20,2025-10-20,Dr. Padgett Backen,Cleared for all activities,1,83
+84,2025-09-04,2026-09-04,Dr. Kay Penreth,Cleared for all activities,1,84
+85,2025-08-25,2026-08-25,Dr. Lewes Kliche,Cleared for all activities,1,85
+86,2026-01-28,2027-01-28,Dr. Analise Heiton,High blood pressure - monitor heart rate,1,86
+87,2024-10-16,2025-10-16,Dr. Colet McRinn,Cleared for all activities,1,87
+88,2025-01-18,2026-01-18,Dr. Audrey Millership,Lower back pain - modify deadlift weights,1,88
+89,2024-11-08,2025-11-08,Dr. Sandro Adamson,High blood pressure - monitor heart rate,1,89
+90,2025-02-25,2026-02-25,Dr. Fairlie Averall,Sensitive wrists - use wraps for pressing movements,1,90
+91,2026-01-30,2027-01-30,Dr. Hermie McKea,Recovering from shoulder injury - no overhead press,1,91
+92,2024-05-09,2025-05-09,Dr. Salem Witham,Cleared for all activities,0,92
+93,2024-07-17,2025-07-17,Dr. Leigh Zotto,Cleared for all activities,1,93
+94,2025-03-30,2026-03-30,Dr. Woodie Aarons,Sensitive wrists - use wraps for pressing movements,1,94
+95,2025-12-10,2026-12-10,Dr. Marion Clemenza,Sensitive wrists - use wraps for pressing movements,0,95
+96,2024-02-08,2025-02-08,Dr. Lizbeth Tiuit,Cleared for all activities,1,96
+97,2024-08-02,2025-08-02,Dr. Nester Mickleburgh,Cleared for all activities,1,97
+98,2024-11-08,2025-11-08,Dr. Bay Clougher,Cleared for all activities,1,98
+99,2025-08-08,2026-08-08,Dr. Josiah Ferronel,Sensitive wrists - use wraps for pressing movements,1,99
+100,2024-07-26,2025-07-26,Dr. Genny Flisher,Sensitive wrists - use wraps for pressing movements,1,100
+101,2024-06-03,2025-06-03,Dr. Marcelline Ciciari,Cleared for all activities,1,101
+102,2025-12-16,2026-12-16,Dr. Karon Whittek,Lower back pain - modify deadlift weights,1,102
+103,2024-11-23,2025-11-23,Dr. Auroora Rhelton,Sensitive wrists - use wraps for pressing movements,1,103
+104,2025-12-27,2026-12-27,Dr. Fiorenze Jarnell,Mild asthma - needs inhaler before cardio,1,104
+105,2025-02-02,2026-02-02,Dr. Elana Bewicke,Cleared for all activities,0,105
+106,2025-01-21,2026-01-21,Dr. Cathee Malenfant,Sensitive wrists - use wraps for pressing movements,1,106
+107,2024-03-07,2025-03-07,Dr. Raychel McGaughay,Cleared for all activities,1,107
+108,2025-11-09,2026-11-09,Dr. Timi Fairburn,Sensitive wrists - use wraps for pressing movements,0,108
+109,2024-07-17,2025-07-17,Dr. Demetria Dogerty,Cleared for all activities,1,109
+110,2024-02-17,2025-02-17,Dr. Janelle Roset,Sensitive wrists - use wraps for pressing movements,1,110
+111,2026-02-10,2027-02-10,Dr. Eliot Gerretsen,Recovering from shoulder injury - no overhead press,1,111
+112,2024-08-26,2025-08-26,Dr. Cher Tayler,Sensitive wrists - use wraps for pressing movements,1,112
+113,2025-05-11,2026-05-11,Dr. Elfrida Crevagh,Sensitive wrists - use wraps for pressing movements,1,113
+114,2025-05-07,2026-05-07,Dr. Patience Biagi,Cleared for all activities,1,114
+115,2024-08-02,2025-08-02,Dr. Loutitia Blackborn,Cleared for all activities,1,115
+116,2024-05-04,2025-05-04,Dr. Derward Krolik,Cleared for all activities,1,116
+117,2025-07-01,2026-07-01,Dr. Desirae Howatt,Mild asthma - needs inhaler before cardio,1,117
+118,2024-11-03,2025-11-03,Dr. Luis Pordal,Cleared for all activities,1,118
+119,2025-11-20,2026-11-20,Dr. Carissa Eyers,Cleared for all activities,1,119
+120,2024-07-04,2025-07-04,Dr. Carlene Corington,High blood pressure - monitor heart rate,1,120
+121,2025-01-15,2026-01-15,Dr. Lionel Davidovics,Cleared for all activities,1,121
+122,2025-12-17,2026-12-17,Dr. Alphard Bretherick,Cleared for all activities,1,122
+123,2024-03-03,2025-03-03,Dr. Delly Tufts,Sensitive wrists - use wraps for pressing movements,1,123
+124,2025-01-17,2026-01-17,Dr. Arielle Cronshaw,Mild asthma - needs inhaler before cardio,1,124
+125,2025-03-23,2026-03-23,Dr. Price Wakely,Cleared for all activities,1,125
+126,2025-07-18,2026-07-18,Dr. Nat Griston,Cleared for all activities,1,126
+127,2025-11-12,2026-11-12,Dr. Kara-lynn Winham,Cleared for all activities,1,127
+128,2024-08-01,2025-08-01,Dr. Bondon Dymidowicz,Sensitive wrists - use wraps for pressing movements,1,128
+129,2025-01-08,2026-01-08,Dr. Clem Ambroisin,Cleared for all activities,1,129
+130,2024-07-31,2025-07-31,Dr. King Ellingworth,Recovering from shoulder injury - no overhead press,1,130
+131,2025-07-17,2026-07-17,Dr. Stevie Delgua,Cleared for all activities,1,131
+132,2024-06-06,2025-06-06,Dr. Tuck Toffolo,Sensitive wrists - use wraps for pressing movements,1,132
+133,2025-07-06,2026-07-06,Dr. Mag Kershaw,Cleared for all activities,0,133
+134,2025-04-02,2026-04-02,Dr. Ofelia Roderigo,Cleared for all activities,1,134
+135,2026-01-04,2027-01-04,Dr. Stevena Morrowe,Cleared for all activities,1,135
+136,2025-04-22,2026-04-22,Dr. Vonni Gaspar,Mild asthma - needs inhaler before cardio,1,136
+137,2026-02-13,2027-02-13,Dr. Basia Yukhnov,Sensitive wrists - use wraps for pressing movements,1,137
+138,2024-07-15,2025-07-15,Dr. Nedi Kleiser,Sensitive wrists - use wraps for pressing movements,1,138
+139,2025-05-21,2026-05-21,Dr. Adelind Greaves,Sensitive wrists - use wraps for pressing movements,1,139
+140,2025-03-12,2026-03-12,Dr. Aggie Abramski,Cleared for all activities,1,140
+141,2024-02-22,2025-02-22,Dr. Eddie Kindleysides,Sensitive wrists - use wraps for pressing movements,1,141
+142,2025-11-18,2026-11-18,Dr. Issi Donovin,Sensitive wrists - use wraps for pressing movements,1,142
+143,2024-02-26,2025-02-26,Dr. Jehanna Nowakowski,Lower back pain - modify deadlift weights,1,143
+144,2026-03-11,2027-03-11,Dr. Elysia Sausman,Lower back pain - modify deadlift weights,1,144
+145,2025-07-12,2026-07-12,Dr. Alis Arkcoll,Lower back pain - modify deadlift weights,1,145
+146,2025-03-10,2026-03-10,Dr. Ronald McCadden,Sensitive wrists - use wraps for pressing movements,1,146
+147,2024-02-17,2025-02-17,Dr. Kerby Commusso,Cleared for all activities,1,147
+148,2025-09-29,2026-09-29,Dr. Joya Willicott,Cleared for all activities,1,148
+149,2024-05-29,2025-05-29,Dr. Adaline Defau,Cleared for all activities,1,149
+150,2024-12-03,2025-12-03,Dr. Sasha Candish,Cleared for all activities,1,150
+151,2024-05-21,2025-05-21,Dr. Peirce Currm,Cleared for all activities,0,151
+152,2025-01-29,2026-01-29,Dr. Jacquelin Yoskowitz,Cleared for all activities,1,152
+153,2025-04-05,2026-04-05,Dr. Wye Jacobovitch,Cleared for all activities,1,153
+154,2024-02-05,2025-02-05,Dr. Fairlie Snary,Previous knee surgery - avoid heavy squats,1,154
+155,2025-11-15,2026-11-15,Dr. Phyllys Cooper,Lower back pain - modify deadlift weights,1,155
+156,2025-12-01,2026-12-01,Dr. Jeannine Mildenhall,Sensitive wrists - use wraps for pressing movements,1,156
+157,2025-05-10,2026-05-10,Dr. Frederic Lordon,Cleared for all activities,1,157
+158,2026-01-31,2027-01-31,Dr. Nissie Rann,Sensitive wrists - use wraps for pressing movements,1,158
+159,2024-03-06,2025-03-06,Dr. Cele Sustins,Sensitive wrists - use wraps for pressing movements,1,159
+160,2025-05-28,2026-05-28,Dr. Rory Minett,Lower back pain - modify deadlift weights,1,160
+161,2025-08-01,2026-08-01,Dr. Talbert Douche,Cleared for all activities,1,161
+162,2025-08-25,2026-08-25,Dr. Thebault Grayland,Lower back pain - modify deadlift weights,1,162
+163,2025-02-15,2026-02-15,Dr. Thacher Scutts,Cleared for all activities,1,163
+164,2024-02-21,2025-02-21,Dr. Giraud Shenton,High blood pressure - monitor heart rate,1,164
+165,2025-02-23,2026-02-23,Dr. Earle Trazzi,Cleared for all activities,1,165
+166,2024-07-06,2025-07-06,Dr. Asa Venn,Cleared for all activities,1,166
+167,2024-06-05,2025-06-05,Dr. Zebulen Jime,Cleared for all activities,1,167
+168,2025-11-04,2026-11-04,Dr. Michale Raiment,Cleared for all activities,1,168
+169,2024-10-21,2025-10-21,Dr. Ozzie Crumb,Sensitive wrists - use wraps for pressing movements,1,169
+170,2025-12-01,2026-12-01,Dr. Sephira Lared,Previous knee surgery - avoid heavy squats,1,170
+171,2025-01-08,2026-01-08,Dr. Saloma Kellard,Cleared for all activities,1,171
+172,2025-09-23,2026-09-23,Dr. Dredi Fidock,Cleared for all activities,1,172
+173,2025-10-06,2026-10-06,Dr. Neda Saintsbury,Cleared for all activities,1,173
+174,2025-02-17,2026-02-17,Dr. Teresa Kempton,Mild asthma - needs inhaler before cardio,1,174
+175,2024-03-17,2025-03-17,Dr. Paxon Velareal,Recovering from shoulder injury - no overhead press,1,175
+176,2026-02-17,2027-02-17,Dr. Katie Brickstock,Lower back pain - modify deadlift weights,1,176
+177,2025-11-28,2026-11-28,Dr. Deidre Rochell,Lower back pain - modify deadlift weights,1,177
+178,2025-09-08,2026-09-08,Dr. Addi Orsi,Cleared for all activities,1,178
+179,2025-02-09,2026-02-09,Dr. Karim O'Cullinane,Recovering from shoulder injury - no overhead press,1,179
+180,2024-07-24,2025-07-24,Dr. Bridgette Whistance,Mild asthma - needs inhaler before cardio,1,180
+181,2024-01-15,2025-01-15,Dr. Tyne Kohen,Lower back pain - modify deadlift weights,1,181
+182,2025-10-23,2026-10-23,Dr. Pacorro Sollowaye,Lower back pain - modify deadlift weights,1,182
+183,2025-03-27,2026-03-27,Dr. Darnall Gyurkovics,Cleared for all activities,1,183
+184,2024-05-11,2025-05-11,Dr. Lea Rycraft,Sensitive wrists - use wraps for pressing movements,1,184
+185,2024-02-24,2025-02-24,Dr. Tod Cogdell,Sensitive wrists - use wraps for pressing movements,1,185
+186,2025-02-22,2026-02-22,Dr. Barbie Pauler,Cleared for all activities,1,186
+187,2024-04-12,2025-04-12,Dr. Nerty Robinet,Cleared for all activities,1,187
+188,2024-12-22,2025-12-22,Dr. Jud Ledwitch,Sensitive wrists - use wraps for pressing movements,1,188
+189,2025-11-18,2026-11-18,Dr. Olly Castanone,Cleared for all activities,1,189
+190,2024-07-13,2025-07-13,Dr. Stevena Franceschelli,High blood pressure - monitor heart rate,1,190
+191,2024-12-18,2025-12-18,Dr. Gerardo Happel,Cleared for all activities,1,191
+192,2026-02-22,2027-02-22,Dr. Ambrosius Mayfield,Cleared for all activities,1,192
+193,2025-10-28,2026-10-28,Dr. Cobby D'Antonio,Cleared for all activities,1,193
+194,2025-05-18,2026-05-18,Dr. Gwen Chitson,Cleared for all activities,0,194
+195,2025-02-11,2026-02-11,Dr. Donica Bratcher,Cleared for all activities,1,195
+196,2024-12-13,2025-12-13,Dr. Bliss Gerault,Sensitive wrists - use wraps for pressing movements,1,196
+197,2025-09-03,2026-09-03,Dr. Nettie Masson,Sensitive wrists - use wraps for pressing movements,1,197
+198,2024-02-01,2025-02-01,Dr. Bobbie Baudon,Cleared for all activities,1,198
+199,2026-01-21,2027-01-21,Dr. Heida Mouse,Cleared for all activities,1,199
+200,2024-10-06,2025-10-06,Dr. Stafford Claypole,Cleared for all activities,1,200
+201,2024-10-12,2025-10-12,Dr. Glad Royce,High blood pressure - monitor heart rate,1,201
+202,2026-02-21,2027-02-21,Dr. Laetitia Burch,Lower back pain - modify deadlift weights,1,202
+203,2025-04-08,2026-04-08,Dr. Adolf Murfett,Mild asthma - needs inhaler before cardio,1,203
+204,2026-01-29,2027-01-29,Dr. Bobby Leftley,Sensitive wrists - use wraps for pressing movements,1,204
+205,2024-04-08,2025-04-08,Dr. Webb Gregorowicz,Cleared for all activities,1,205
+206,2025-01-24,2026-01-24,Dr. Fredia D'Emanuele,Cleared for all activities,0,206
+207,2024-01-23,2025-01-23,Dr. Wilden Pigram,Previous knee surgery - avoid heavy squats,1,207
+208,2025-05-16,2026-05-16,Dr. Anastassia Mathiassen,Lower back pain - modify deadlift weights,1,208
+209,2025-03-11,2026-03-11,Dr. Mord Rainard,Sensitive wrists - use wraps for pressing movements,0,209
+210,2024-03-02,2025-03-02,Dr. Dulci Paxforde,Cleared for all activities,1,210
+211,2025-11-30,2026-11-30,Dr. Rey Rignall,Cleared for all activities,1,211
+212,2025-08-17,2026-08-17,Dr. Teddie Connor,Cleared for all activities,1,212
+213,2025-08-27,2026-08-27,Dr. Ivory Aleksic,Mild asthma - needs inhaler before cardio,1,213
+214,2024-12-20,2025-12-20,Dr. Veda Vigars,Sensitive wrists - use wraps for pressing movements,1,214
+215,2025-05-11,2026-05-11,Dr. Chicky Durbyn,Sensitive wrists - use wraps for pressing movements,1,215
+216,2025-11-26,2026-11-26,Dr. Eleonora Cruickshanks,Lower back pain - modify deadlift weights,1,216
+217,2024-11-06,2025-11-06,Dr. Lek Copcote,Cleared for all activities,0,217
+218,2025-02-18,2026-02-18,Dr. Menard Dressel,High blood pressure - monitor heart rate,1,218
+219,2024-08-19,2025-08-19,Dr. Viv Veness,Cleared for all activities,1,219
+220,2024-01-04,2025-01-04,Dr. Norri Wilson,Lower back pain - modify deadlift weights,1,220
+221,2025-08-12,2026-08-12,Dr. Herculie Hammerman,Mild asthma - needs inhaler before cardio,0,221
+222,2025-09-20,2026-09-20,Dr. Abran Enever,Cleared for all activities,1,222
+223,2025-01-04,2026-01-04,Dr. Holden Weeden,Cleared for all activities,1,223
+224,2025-12-28,2026-12-28,Dr. Oralla Otley,Lower back pain - modify deadlift weights,1,224
+225,2025-11-06,2026-11-06,Dr. Morganica Mantram,Cleared for all activities,1,225
+226,2026-02-10,2027-02-10,Dr. Hedvige Farrand,Sensitive wrists - use wraps for pressing movements,1,226
+227,2024-02-20,2025-02-20,Dr. Lorry Seakes,Mild asthma - needs inhaler before cardio,1,227
+228,2025-12-09,2026-12-09,Dr. Alla Stimson,Cleared for all activities,1,228
+229,2025-01-23,2026-01-23,Dr. Consolata Landers,Cleared for all activities,1,229
+230,2024-05-30,2025-05-30,Dr. Hyacinth Wroath,Sensitive wrists - use wraps for pressing movements,1,230
+231,2025-04-18,2026-04-18,Dr. Donica Foxhall,Cleared for all activities,1,231
+232,2025-02-08,2026-02-08,Dr. Elsinore Varney,Lower back pain - modify deadlift weights,1,232
+233,2026-03-14,2027-03-14,Dr. Bogart Maxsted,Sensitive wrists - use wraps for pressing movements,1,233
+234,2026-01-24,2027-01-24,Dr. Kristyn Jackes,Cleared for all activities,1,234
+235,2024-02-07,2025-02-07,Dr. Haley Fuidge,Cleared for all activities,1,235
+236,2026-03-11,2027-03-11,Dr. Livvie Olsen,Mild asthma - needs inhaler before cardio,1,236
+237,2025-07-17,2026-07-17,Dr. Corrie Rosas,Cleared for all activities,0,237
+238,2025-04-12,2026-04-12,Dr. Hedi Pritchett,Cleared for all activities,0,238
+239,2025-06-23,2026-06-23,Dr. Wilden Cauderlie,Cleared for all activities,1,239
+240,2024-02-16,2025-02-16,Dr. Bren Janota,Cleared for all activities,1,240
+241,2024-01-29,2025-01-29,Dr. Chery Hughes,Cleared for all activities,1,241
+242,2025-12-05,2026-12-05,Dr. Chrysa Wickersham,Lower back pain - modify deadlift weights,1,242
+243,2025-06-04,2026-06-04,Dr. Averil Labusch,Cleared for all activities,1,243
+244,2024-01-27,2025-01-27,Dr. Brett Wimp,Sensitive wrists - use wraps for pressing movements,1,244
+245,2025-01-11,2026-01-11,Dr. Tommie Tilio,Cleared for all activities,1,245
+246,2024-09-18,2025-09-18,Dr. Rosabelle Tomkys,Cleared for all activities,1,246
+247,2025-07-28,2026-07-28,Dr. Marijo O'Caherny,Cleared for all activities,1,247
+248,2025-04-09,2026-04-09,Dr. Rourke Brasier,Sensitive wrists - use wraps for pressing movements,1,248
+249,2024-09-06,2025-09-06,Dr. Isidore Heindle,Cleared for all activities,1,249
+250,2024-09-23,2025-09-23,Dr. Shalne Corstan,Cleared for all activities,1,250
+251,2024-08-28,2025-08-28,Dr. Vi Bierman,Cleared for all activities,1,251
+252,2025-12-15,2026-12-15,Dr. Licha Noads,Sensitive wrists - use wraps for pressing movements,1,252
+253,2024-03-25,2025-03-25,Dr. Angie Blaylock,Mild asthma - needs inhaler before cardio,1,253
+254,2024-04-29,2025-04-29,Dr. Stephannie Creak,High blood pressure - monitor heart rate,1,254
+255,2024-04-01,2025-04-01,Dr. Therese Whittenbury,Cleared for all activities,1,255
+256,2025-07-18,2026-07-18,Dr. Gabe Hawtin,Cleared for all activities,1,256
+257,2024-04-08,2025-04-08,Dr. Maxine Nicholes,Cleared for all activities,1,257
+258,2024-09-08,2025-09-08,Dr. Nanette Kalvin,Cleared for all activities,0,258
+259,2025-03-31,2026-03-31,Dr. Cal Teesdale,Cleared for all activities,1,259
+260,2024-08-10,2025-08-10,Dr. Nicoline Calyton,Cleared for all activities,1,260
+261,2025-04-23,2026-04-23,Dr. Alf Haskayne,Cleared for all activities,1,261
+262,2024-12-10,2025-12-10,Dr. Deanna McGlynn,Recovering from shoulder injury - no overhead press,1,262
+263,2025-07-09,2026-07-09,Dr. Tailor Boake,Recovering from shoulder injury - no overhead press,1,263
+264,2025-06-07,2026-06-07,Dr. Waly Lambin,Cleared for all activities,1,264
+265,2025-01-30,2026-01-30,Dr. Tammi Wadie,Mild asthma - needs inhaler before cardio,1,265
+266,2025-12-06,2026-12-06,Dr. Valentin Leguey,Cleared for all activities,1,266
+267,2024-02-01,2025-02-01,Dr. Marcelo Krolle,Mild asthma - needs inhaler before cardio,1,267
+268,2025-06-21,2026-06-21,Dr. Rea Castille,Sensitive wrists - use wraps for pressing movements,1,268
+269,2026-03-04,2027-03-04,Dr. Bambie Rakes,Cleared for all activities,1,269
+270,2024-07-16,2025-07-16,Dr. Tadeas Minihan,Cleared for all activities,1,270
+271,2024-12-03,2025-12-03,Dr. Pammie Gillopp,Cleared for all activities,1,271
+272,2024-05-18,2025-05-18,Dr. Tiff Vayne,Sensitive wrists - use wraps for pressing movements,1,272
+273,2025-09-15,2026-09-15,Dr. Bartolemo Cocci,Cleared for all activities,1,273
+274,2024-09-18,2025-09-18,Dr. Christabel Banstead,Cleared for all activities,1,274
+275,2026-01-04,2027-01-04,Dr. Novelia O'Henery,Cleared for all activities,1,275
+276,2025-12-01,2026-12-01,Dr. Wit Allbones,High blood pressure - monitor heart rate,1,276
+277,2026-02-16,2027-02-16,Dr. Gertruda Andreini,Lower back pain - modify deadlift weights,0,277
+278,2024-03-02,2025-03-02,Dr. Manfred Drakers,Mild asthma - needs inhaler before cardio,1,278
+279,2024-03-29,2025-03-29,Dr. Minda Milch,Sensitive wrists - use wraps for pressing movements,1,279
+280,2024-10-30,2025-10-30,Dr. Lorettalorna Blemings,Sensitive wrists - use wraps for pressing movements,1,280
+281,2024-02-13,2025-02-13,Dr. Roz Miell,Cleared for all activities,1,281
+282,2024-10-12,2025-10-12,Dr. Charlotta Sargeaunt,Cleared for all activities,1,282
+283,2024-10-16,2025-10-16,Dr. Herschel Gilogly,Lower back pain - modify deadlift weights,1,283
+284,2025-01-25,2026-01-25,Dr. Dana Gorstidge,Cleared for all activities,1,284
+285,2025-05-29,2026-05-29,Dr. Brnaby Milburn,Lower back pain - modify deadlift weights,1,285
+286,2024-01-23,2025-01-23,Dr. Perice Deary,Cleared for all activities,0,286
+287,2024-02-11,2025-02-11,Dr. Carrol Hollyar,Mild asthma - needs inhaler before cardio,1,287
+288,2024-10-13,2025-10-13,Dr. Nettie Eschalotte,Sensitive wrists - use wraps for pressing movements,1,288
+289,2024-04-08,2025-04-08,Dr. Lari Loughead,Sensitive wrists - use wraps for pressing movements,1,289
+290,2025-05-18,2026-05-18,Dr. Leroy Mussett,Cleared for all activities,1,290
+291,2024-01-09,2025-01-09,Dr. Conchita Binnell,Sensitive wrists - use wraps for pressing movements,1,291
+292,2025-11-05,2026-11-05,Dr. Sydney Chinnock,Sensitive wrists - use wraps for pressing movements,1,292
+293,2024-04-02,2025-04-02,Dr. Di Hamlin,Cleared for all activities,1,293
+294,2025-12-22,2026-12-22,Dr. Cesar Eneas,Sensitive wrists - use wraps for pressing movements,1,294
+295,2025-06-09,2026-06-09,Dr. Nil Knotton,Cleared for all activities,0,295
+296,2025-03-13,2026-03-13,Dr. Elmore Taylot,Cleared for all activities,0,296
+297,2024-01-01,2025-01-01,Dr. Leone Stave,Cleared for all activities,1,297
+298,2025-06-08,2026-06-08,Dr. Winslow Itzak,Cleared for all activities,1,298
+299,2024-03-09,2025-03-09,Dr. Alic Pleavin,Cleared for all activities,1,299
+300,2024-01-05,2025-01-05,Dr. Shantee Darke,Cleared for all activities,1,300
+301,2024-12-19,2025-12-19,Dr. Alyda Lovett,Cleared for all activities,1,301
+302,2025-02-21,2026-02-21,Dr. Weber Willeman,Lower back pain - modify deadlift weights,1,302
+303,2024-09-23,2025-09-23,Dr. Carmelia McQuaker,Cleared for all activities,1,303
+304,2025-03-16,2026-03-16,Dr. Patrizia Detloff,Cleared for all activities,1,304
+305,2024-12-05,2025-12-05,Dr. Artie Gibbe,Sensitive wrists - use wraps for pressing movements,1,305
+306,2024-01-14,2025-01-14,Dr. Sonya Boughton,Recovering from shoulder injury - no overhead press,1,306
+307,2024-12-29,2025-12-29,Dr. Hillery Adams,Cleared for all activities,1,307
+308,2025-07-01,2026-07-01,Dr. Juli Shoemark,Cleared for all activities,1,308
+309,2024-08-28,2025-08-28,Dr. Beryle Acosta,Sensitive wrists - use wraps for pressing movements,1,309
+310,2024-05-19,2025-05-19,Dr. Maximilian Dundridge,Mild asthma - needs inhaler before cardio,1,310
+311,2024-08-12,2025-08-12,Dr. Louella Labrenz,Recovering from shoulder injury - no overhead press,1,311
+312,2024-11-25,2025-11-25,Dr. Lora Needs,Cleared for all activities,1,312
+313,2026-02-14,2027-02-14,Dr. Hussein Searjeant,Cleared for all activities,1,313
+314,2024-09-26,2025-09-26,Dr. Lynnette Rowbrey,Cleared for all activities,1,314
+315,2024-09-21,2025-09-21,Dr. Florrie Brookesbie,Cleared for all activities,1,315
+316,2026-02-26,2027-02-26,Dr. Lilith Sallenger,Cleared for all activities,1,316
+317,2024-01-15,2025-01-15,Dr. Kienan Lilian,Cleared for all activities,1,317
+318,2024-01-12,2025-01-12,Dr. Christyna Phibb,Cleared for all activities,1,318
+319,2025-09-24,2026-09-24,Dr. Rustie Tibols,Cleared for all activities,1,319
+320,2024-05-05,2025-05-05,Dr. Cris Normanvill,High blood pressure - monitor heart rate,1,320
+321,2024-04-18,2025-04-18,Dr. Locke Hanselmann,Sensitive wrists - use wraps for pressing movements,1,321
+322,2025-04-26,2026-04-26,Dr. Oswald Kirkam,Cleared for all activities,0,322
+323,2025-02-13,2026-02-13,Dr. Wood Paulsen,Sensitive wrists - use wraps for pressing movements,1,323
+324,2024-09-05,2025-09-05,Dr. Malory Killby,Sensitive wrists - use wraps for pressing movements,1,324
+325,2026-02-06,2027-02-06,Dr. Dawna Newarte,Cleared for all activities,1,325
+326,2025-02-26,2026-02-26,Dr. Ashley Robertelli,Cleared for all activities,1,326
+327,2025-11-08,2026-11-08,Dr. Georgie Steptoe,Lower back pain - modify deadlift weights,1,327
+328,2024-02-06,2025-02-06,Dr. Gilberto Bonome,Cleared for all activities,1,328
+329,2025-07-21,2026-07-21,Dr. Melina Idell,Lower back pain - modify deadlift weights,1,329
+330,2025-11-09,2026-11-09,Dr. Monty Gabbitas,Sensitive wrists - use wraps for pressing movements,1,330
+331,2025-08-24,2026-08-24,Dr. Case Brass,High blood pressure - monitor heart rate,1,331
+332,2025-02-01,2026-02-01,Dr. Ertha Besemer,Cleared for all activities,1,332
+333,2025-02-04,2026-02-04,Dr. Kimball Blades,Cleared for all activities,1,333
+334,2024-01-20,2025-01-20,Dr. Sigismundo Sworne,Cleared for all activities,1,334
+335,2024-04-02,2025-04-02,Dr. Mateo Fieller,High blood pressure - monitor heart rate,1,335
+336,2024-08-01,2025-08-01,Dr. Anthiathia Geram,Sensitive wrists - use wraps for pressing movements,1,336
+337,2025-05-04,2026-05-04,Dr. Kimbell Josefer,Cleared for all activities,1,337
+338,2025-12-31,2026-12-31,Dr. Billi Varrow,Cleared for all activities,1,338
+339,2025-03-26,2026-03-26,Dr. Kippie Gearty,Sensitive wrists - use wraps for pressing movements,1,339
+340,2024-08-30,2025-08-30,Dr. Brittney Fell,Cleared for all activities,1,340
+341,2025-11-08,2026-11-08,Dr. Hurleigh Chessill,Cleared for all activities,0,341
+342,2026-01-28,2027-01-28,Dr. Jennica Brandone,Cleared for all activities,1,342
+343,2024-07-07,2025-07-07,Dr. Cosimo Strathern,Sensitive wrists - use wraps for pressing movements,1,343
+344,2024-10-05,2025-10-05,Dr. Shawnee Rosborough,Sensitive wrists - use wraps for pressing movements,1,344
+345,2024-08-25,2025-08-25,Dr. Griffith Bulled,Sensitive wrists - use wraps for pressing movements,1,345
+346,2024-02-28,2025-02-28,Dr. Janina Keynd,Mild asthma - needs inhaler before cardio,1,346
+347,2025-03-28,2026-03-28,Dr. Regan Braidman,Cleared for all activities,1,347
+348,2024-09-04,2025-09-04,Dr. Alvinia Readshaw,Cleared for all activities,1,348
+349,2025-02-02,2026-02-02,Dr. Adara Gavahan,Lower back pain - modify deadlift weights,1,349
+350,2024-06-03,2025-06-03,Dr. Joela Folca,Cleared for all activities,1,350
+351,2024-07-02,2025-07-02,Dr. Jefferson Layton,Cleared for all activities,1,351
+352,2024-02-17,2025-02-17,Dr. Althea Garcia,Cleared for all activities,1,352
+353,2024-10-20,2025-10-20,Dr. Jaynell Geck,Cleared for all activities,1,353
+354,2025-11-09,2026-11-09,Dr. Emmy Wenderott,Recovering from shoulder injury - no overhead press,1,354
+355,2025-07-01,2026-07-01,Dr. Cybil Mor,Mild asthma - needs inhaler before cardio,1,355
+356,2024-11-23,2025-11-23,Dr. Andeee Haxbie,Mild asthma - needs inhaler before cardio,1,356
+357,2025-08-08,2026-08-08,Dr. Nanice Heigho,Sensitive wrists - use wraps for pressing movements,1,357
+358,2024-06-27,2025-06-27,Dr. Sidney Skirving,Lower back pain - modify deadlift weights,1,358
+359,2024-10-12,2025-10-12,Dr. Courtnay Gethen,Cleared for all activities,1,359
+360,2024-12-01,2025-12-01,Dr. Ange Lawful,Cleared for all activities,1,360
+361,2024-10-23,2025-10-23,Dr. Gayla Schusterl,Mild asthma - needs inhaler before cardio,1,361
+362,2025-12-02,2026-12-02,Dr. Joshua Vasyagin,Sensitive wrists - use wraps for pressing movements,1,362
+363,2025-12-20,2026-12-20,Dr. Beverley Brimm,Sensitive wrists - use wraps for pressing movements,1,363
+364,2024-08-24,2025-08-24,Dr. Yoshi Rhydderch,Sensitive wrists - use wraps for pressing movements,0,364
+365,2025-07-16,2026-07-16,Dr. Any Kubacek,Cleared for all activities,1,365
+366,2025-06-13,2026-06-13,Dr. Margit Boxer,Sensitive wrists - use wraps for pressing movements,1,366
+367,2026-03-12,2027-03-12,Dr. Marina Raddenbury,Cleared for all activities,1,367
+368,2024-08-02,2025-08-02,Dr. Bryon Smart,Mild asthma - needs inhaler before cardio,1,368
+369,2025-10-19,2026-10-19,Dr. Kalindi Mackley,Lower back pain - modify deadlift weights,0,369
+370,2024-07-20,2025-07-20,Dr. Whitney Astill,Sensitive wrists - use wraps for pressing movements,1,370
+371,2025-09-30,2026-09-30,Dr. Vachel Moorhead,Cleared for all activities,1,371
+372,2024-07-03,2025-07-03,Dr. Gardener Dexter,Cleared for all activities,1,372
+373,2025-11-01,2026-11-01,Dr. Michell Bultitude,Cleared for all activities,1,373
+374,2024-10-08,2025-10-08,Dr. Mavra Burdytt,Recovering from shoulder injury - no overhead press,1,374
+375,2025-04-01,2026-04-01,Dr. Zachary Gland,Cleared for all activities,1,375
+376,2025-09-22,2026-09-22,Dr. Sari Chiswell,Mild asthma - needs inhaler before cardio,1,376
+377,2025-06-30,2026-06-30,Dr. Allin Cicco,Cleared for all activities,1,377
+378,2024-11-20,2025-11-20,Dr. Mord Jeratt,Sensitive wrists - use wraps for pressing movements,1,378
+379,2024-09-01,2025-09-01,Dr. Horten Tallis,Cleared for all activities,1,379
+380,2025-06-10,2026-06-10,Dr. Ave Phelp,Cleared for all activities,1,380
+381,2025-01-28,2026-01-28,Dr. Adriena Gilleon,Recovering from shoulder injury - no overhead press,0,381
+382,2025-04-11,2026-04-11,Dr. Marjie Rodliff,Cleared for all activities,1,382
+383,2024-02-08,2025-02-08,Dr. Morna Dufall,Cleared for all activities,1,383
+384,2025-09-14,2026-09-14,Dr. Agnola Van Zon,Cleared for all activities,1,384
+385,2024-01-28,2025-01-28,Dr. Rebbecca Hancox,Cleared for all activities,1,385
+386,2025-02-20,2026-02-20,Dr. Errick Saines,Cleared for all activities,1,386
+387,2025-11-07,2026-11-07,Dr. Talia Jurasek,Cleared for all activities,1,387
+388,2025-02-08,2026-02-08,Dr. Brooke Bengle,Cleared for all activities,1,388
+389,2024-05-13,2025-05-13,Dr. Lynda Soppeth,Sensitive wrists - use wraps for pressing movements,1,389
+390,2024-08-16,2025-08-16,Dr. Vin Stammer,Cleared for all activities,1,390
+391,2024-06-18,2025-06-18,Dr. Somerset Heard,Mild asthma - needs inhaler before cardio,1,391
+392,2025-05-28,2026-05-28,Dr. Patty Rappaport,Sensitive wrists - use wraps for pressing movements,1,392
+393,2025-12-04,2026-12-04,Dr. Whitaker Glasheen,Sensitive wrists - use wraps for pressing movements,1,393
+394,2025-03-13,2026-03-13,Dr. Salomone Bellow,Mild asthma - needs inhaler before cardio,1,394
+395,2025-11-24,2026-11-24,Dr. Angelico Edowes,Cleared for all activities,1,395
+396,2025-11-15,2026-11-15,Dr. Collie Oaker,Cleared for all activities,1,396
+397,2025-09-18,2026-09-18,Dr. Don Eriksson,Cleared for all activities,1,397
+398,2024-10-20,2025-10-20,Dr. Nickie Pavie,Sensitive wrists - use wraps for pressing movements,1,398
+399,2025-11-25,2026-11-25,Dr. Henry Bartali,High blood pressure - monitor heart rate,1,399
+400,2025-08-28,2026-08-28,Dr. Celestyn Baddoe,Previous knee surgery - avoid heavy squats,1,400
+401,2024-10-23,2025-10-23,Dr. Opal Vlies,Cleared for all activities,1,401
+402,2024-03-02,2025-03-02,Dr. Armin Gabb,Sensitive wrists - use wraps for pressing movements,1,402
+403,2026-01-31,2027-01-31,Dr. Harmon Harsent,Sensitive wrists - use wraps for pressing movements,1,403
+404,2025-06-14,2026-06-14,Dr. Gene McMichell,High blood pressure - monitor heart rate,1,404
+405,2024-05-23,2025-05-23,Dr. Odetta Nussii,Cleared for all activities,1,405
+406,2024-07-12,2025-07-12,Dr. Giuditta Haygreen,Cleared for all activities,1,406
+407,2025-03-14,2026-03-14,Dr. Vanya Girauld,Sensitive wrists - use wraps for pressing movements,1,407
+408,2026-03-13,2027-03-13,Dr. Lenee Dawbery,Sensitive wrists - use wraps for pressing movements,1,408
+409,2024-03-27,2025-03-27,Dr. Eloisa Yitzovitz,Recovering from shoulder injury - no overhead press,0,409
+410,2025-04-12,2026-04-12,Dr. Ashby Reijmers,Cleared for all activities,1,410
+411,2025-12-31,2026-12-31,Dr. Hendrick Kleinfeld,Cleared for all activities,1,411
+412,2024-10-03,2025-10-03,Dr. Lexis Sabates,Lower back pain - modify deadlift weights,0,412
+413,2024-10-02,2025-10-02,Dr. Major Phillipps,Cleared for all activities,1,413
+414,2024-07-29,2025-07-29,Dr. Zia Alven,Cleared for all activities,1,414
+415,2024-05-13,2025-05-13,Dr. Clarence Burger,Cleared for all activities,1,415
+416,2024-05-23,2025-05-23,Dr. Lisette MacComiskey,Cleared for all activities,0,416
+417,2025-01-29,2026-01-29,Dr. Adeline Shoreman,Cleared for all activities,1,417
+418,2024-10-19,2025-10-19,Dr. Damian Matusson,High blood pressure - monitor heart rate,1,418
+419,2026-01-27,2027-01-27,Dr. Elana Websdale,Sensitive wrists - use wraps for pressing movements,1,419
+420,2025-08-25,2026-08-25,Dr. Nollie Cowderay,Cleared for all activities,1,420
+421,2024-05-20,2025-05-20,Dr. Dinnie Sayburn,Lower back pain - modify deadlift weights,0,421
+422,2024-06-20,2025-06-20,Dr. Masha Marieton,Cleared for all activities,1,422
+423,2025-01-27,2026-01-27,Dr. Gaylord Lenden,Sensitive wrists - use wraps for pressing movements,1,423
+424,2024-01-04,2025-01-04,Dr. Rikki Hanney,Sensitive wrists - use wraps for pressing movements,1,424
+425,2025-04-07,2026-04-07,Dr. Maggi Bloxholm,Lower back pain - modify deadlift weights,1,425
+426,2024-11-02,2025-11-02,Dr. Sargent Caldicot,Mild asthma - needs inhaler before cardio,1,426
+427,2024-09-04,2025-09-04,Dr. Violante Connal,Cleared for all activities,1,427
+428,2025-04-16,2026-04-16,Dr. Nils Pavey,High blood pressure - monitor heart rate,1,428
+429,2025-10-18,2026-10-18,Dr. Vernen Easman,Recovering from shoulder injury - no overhead press,1,429
+430,2025-02-23,2026-02-23,Dr. Lemmie Bidmead,Sensitive wrists - use wraps for pressing movements,1,430
+431,2025-06-06,2026-06-06,Dr. Maddie Loude,Cleared for all activities,1,431
+432,2025-05-10,2026-05-10,Dr. Kip Elliston,Lower back pain - modify deadlift weights,1,432
+433,2025-06-12,2026-06-12,Dr. Joletta Pecha,Lower back pain - modify deadlift weights,1,433
+434,2024-11-20,2025-11-20,Dr. Veriee Prevett,Cleared for all activities,1,434
+435,2025-05-18,2026-05-18,Dr. Klara McSweeney,Lower back pain - modify deadlift weights,1,435
+436,2026-01-26,2027-01-26,Dr. Ginelle Hessentaler,Mild asthma - needs inhaler before cardio,1,436
+437,2025-04-24,2026-04-24,Dr. Elianora Very,Lower back pain - modify deadlift weights,1,437
+438,2024-04-01,2025-04-01,Dr. Ondrea Wallsworth,Cleared for all activities,0,438
+439,2025-03-18,2026-03-18,Dr. Papagena Maystone,Cleared for all activities,1,439
+440,2026-01-01,2027-01-01,Dr. Bordy Cracker,Cleared for all activities,1,440
+441,2025-09-13,2026-09-13,Dr. Athena Melsome,Cleared for all activities,1,441
+442,2025-02-19,2026-02-19,Dr. Sibilla Ruckman,Cleared for all activities,1,442
+443,2026-01-15,2027-01-15,Dr. Isabelle Tremoille,Cleared for all activities,1,443
+444,2025-01-08,2026-01-08,Dr. Jacinthe Greenwell,Cleared for all activities,1,444
+445,2024-11-01,2025-11-01,Dr. Adriano Boam,Cleared for all activities,1,445
+446,2025-05-12,2026-05-12,Dr. Merrick McKevin,Cleared for all activities,1,446
+447,2025-04-15,2026-04-15,Dr. Vonny Lidgett,Cleared for all activities,1,447
+448,2026-01-28,2027-01-28,Dr. Ted Greensall,Cleared for all activities,1,448
+449,2024-01-18,2025-01-18,Dr. Robert Fairweather,Cleared for all activities,0,449
+450,2024-01-13,2025-01-13,Dr. Teresita Kettow,High blood pressure - monitor heart rate,1,450
+451,2025-05-17,2026-05-17,Dr. Ferguson Fernyhough,High blood pressure - monitor heart rate,1,451
+452,2024-04-23,2025-04-23,Dr. Jess Giacomasso,Sensitive wrists - use wraps for pressing movements,1,452
+453,2024-05-09,2025-05-09,Dr. Brianna Spellman,Cleared for all activities,1,453
+454,2025-12-07,2026-12-07,Dr. Swen Boreland,Mild asthma - needs inhaler before cardio,1,454
+455,2025-03-11,2026-03-11,Dr. Michaella Chell,Cleared for all activities,0,455
+456,2025-03-03,2026-03-03,Dr. Pincus Pawlaczyk,Mild asthma - needs inhaler before cardio,1,456
+457,2024-02-05,2025-02-05,Dr. Heywood Yeatman,High blood pressure - monitor heart rate,1,457
+458,2025-03-23,2026-03-23,Dr. Christoforo McCartney,Cleared for all activities,1,458
+459,2024-10-30,2025-10-30,Dr. Sandor MacPherson,Cleared for all activities,1,459
+460,2024-01-15,2025-01-15,Dr. Alanah Severwright,Cleared for all activities,1,460
+461,2024-01-22,2025-01-22,Dr. Beauregard Abbey,Cleared for all activities,1,461
+462,2025-05-07,2026-05-07,Dr. Alford Robbe,Cleared for all activities,1,462
+463,2024-05-11,2025-05-11,Dr. Whitney Ranstead,Sensitive wrists - use wraps for pressing movements,1,463
+464,2025-02-05,2026-02-05,Dr. Flemming Coggins,Cleared for all activities,1,464
+465,2025-02-23,2026-02-23,Dr. Willabella Casetti,Cleared for all activities,0,465
+466,2024-04-16,2025-04-16,Dr. Darby Hughf,Lower back pain - modify deadlift weights,1,466
+467,2026-02-19,2027-02-19,Dr. Joyous Minero,Cleared for all activities,1,467
+468,2024-01-28,2025-01-28,Dr. Nikolas Ricco,Cleared for all activities,1,468
+469,2024-04-04,2025-04-04,Dr. Betteanne Riseborough,Cleared for all activities,1,469
+470,2026-01-07,2027-01-07,Dr. Alex Warrack,Sensitive wrists - use wraps for pressing movements,1,470
+471,2024-12-29,2025-12-29,Dr. Ethelred Ridley,Cleared for all activities,1,471
+472,2024-01-28,2025-01-28,Dr. Prince Ollerenshaw,Lower back pain - modify deadlift weights,1,472
+473,2025-05-22,2026-05-22,Dr. Farand Dovinson,Cleared for all activities,1,473
+474,2026-02-26,2027-02-26,Dr. Dory McAndie,Cleared for all activities,1,474
+475,2024-08-31,2025-08-31,Dr. Alaine Imos,Cleared for all activities,1,475
+476,2024-06-15,2025-06-15,Dr. Xaviera Pamplin,Cleared for all activities,1,476
+477,2024-04-15,2025-04-15,Dr. Donny Faro,Recovering from shoulder injury - no overhead press,1,477
+478,2024-01-25,2025-01-25,Dr. Bartram Cordey,Cleared for all activities,1,478
+479,2025-06-29,2026-06-29,Dr. Cece Georgescu,High blood pressure - monitor heart rate,0,479
+480,2024-11-25,2025-11-25,Dr. Remington Lambertson,Lower back pain - modify deadlift weights,1,480
+481,2025-07-15,2026-07-15,Dr. Henry Guage,Mild asthma - needs inhaler before cardio,1,481
+482,2024-11-14,2025-11-14,Dr. Pegeen Bachs,Sensitive wrists - use wraps for pressing movements,1,482
+483,2024-09-20,2025-09-20,Dr. Virginia Manketell,Cleared for all activities,1,483
+484,2026-01-01,2027-01-01,Dr. Nell De La Coste,Cleared for all activities,1,484
+485,2025-12-17,2026-12-17,Dr. Izaak Gremane,Cleared for all activities,1,485
+486,2025-12-06,2026-12-06,Dr. Kellina Pockett,Previous knee surgery - avoid heavy squats,1,486
+487,2025-04-21,2026-04-21,Dr. Viv Blackater,Cleared for all activities,1,487
+488,2025-10-29,2026-10-29,Dr. Edward Eleshenar,Cleared for all activities,1,488
+489,2025-06-21,2026-06-21,Dr. Waldo Ralton,Cleared for all activities,1,489
+490,2024-09-21,2025-09-21,Dr. Charleen Fenlon,Cleared for all activities,1,490
+491,2025-09-18,2026-09-18,Dr. Ailsun Corris,Cleared for all activities,1,491
+492,2024-02-04,2025-02-04,Dr. Arlan Laurenty,Mild asthma - needs inhaler before cardio,1,492
+493,2024-09-05,2025-09-05,Dr. Kirk D'Onisi,Sensitive wrists - use wraps for pressing movements,1,493
+494,2025-03-02,2026-03-02,Dr. Paddy Idiens,Cleared for all activities,1,494
+495,2025-03-30,2026-03-30,Dr. Sutton Proughten,Lower back pain - modify deadlift weights,1,495
+496,2026-03-17,2027-03-17,Dr. Gustie Strang,Mild asthma - needs inhaler before cardio,1,496
+497,2025-07-12,2026-07-12,Dr. Suzette Nelhams,High blood pressure - monitor heart rate,1,497
+498,2024-12-25,2025-12-25,Dr. Nolie Tear,Cleared for all activities,1,498
+499,2025-05-09,2026-05-09,Dr. Annora Iacovone,Cleared for all activities,1,499
+500,2024-12-03,2025-12-03,Dr. Georgianne Sitwell,Cleared for all activities,1,500
