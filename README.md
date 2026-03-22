@@ -1,4 +1,4 @@
-<div align="center">
+<img width="854" height="334" alt="image" src="https://github.com/user-attachments/assets/5de33a72-b068-49cc-9943-afc98eed705a" /><div align="center">
   <h1>🏋️‍♂️ PowerGym Pro - Database Project</h1>
   <p><b>מערכת מתקדמת לניהול מתאמנים, מדדי גוף ותוכניות אימון</b></p>
   
@@ -196,14 +196,14 @@ FROM EXERCISE WHERE Exercise_ID IN (SELECT Exercise_ID FROM INCLUDES WHERE Progr
 
 **צילומי מסך - דרך א':**
 <p align="center">
-  <img src="LINK_FOR_Q2A_RUN_PICTURE" width="45%" alt="Q2A Run" />
-  <img src="LINK_FOR_Q2A_RESULT_PICTURE" width="45%" alt="Q2A Result" />
+  <img src="https://github.com/user-attachments/assets/b6baddc3-b864-4809-b010-262d75817efc" width="45%" alt="Q2A Run" />
+  <img src="https://github.com/user-attachments/assets/077e71aa-e309-467e-b43c-e44202ff0894" width="45%" alt="Q2A Result" />
 </p>
 
 **צילומי מסך - דרך ב':**
 <p align="center">
-  <img src="LINK_FOR_Q2B_RUN_PICTURE" width="45%" alt="Q2B Run" />
-  <img src="LINK_FOR_Q2B_RESULT_PICTURE" width="45%" alt="Q2B Result" />
+  <img src="https://github.com/user-attachments/assets/e95c7ed0-5b3f-444a-aa52-0fdb9bd11cbc" width="45%" alt="Q2B Run" />
+  <img src="https://github.com/user-attachments/assets/077e71aa-e309-467e-b43c-e44202ff0894" width="45%" alt="Q2B Result" />
 </p>
 
 **השוואת יעילות:** דרך א' (JOIN) עוברת אופטימיזציה טובה יותר במנועי SQL. בשימוש ב-IN, במידה ותת-השאילתה מחזירה תוצאות רבות, המנוע עלול לבצע סריקה אטית של הטבלה החיצונית עבור כל ערך. ה-JOIN מיועד לקישור רלציוני כזה ופועל כיחידה אחת יעילה.
@@ -228,17 +228,17 @@ FROM TRAINEE_PROFILE T WHERE EXISTS (
 
 **צילומי מסך - דרך א':**
 <p align="center">
-  <img src="LINK_FOR_Q3A_RUN_PICTURE" width="45%" alt="Q3A Run" />
-  <img src="LINK_FOR_Q3A_RESULT_PICTURE" width="45%" alt="Q3A Result" />
+  <img src="https://github.com/user-attachments/assets/4f83a592-ecf4-46d2-891b-ebe5c292738e" width="45%" alt="Q3A Run" />
+  <img src="https://github.com/user-attachments/assets/d3d5c16d-f1d5-4a02-9cae-148250335a6f" width="45%" alt="Q3A Result" />
 </p>
 
 **צילומי מסך - דרך ב':**
 <p align="center">
-  <img src="LINK_FOR_Q3B_RUN_PICTURE" width="45%" alt="Q3B Run" />
-  <img src="LINK_FOR_Q3B_RESULT_PICTURE" width="45%" alt="Q3B Result" />
+  <img src="https://github.com/user-attachments/assets/6fd46ba8-c3ae-4a6a-84ff-f8fd4a28fc81" width="45%" alt="Q3B Run" />
+  <img src="https://github.com/user-attachments/assets/e71594c5-7969-4b31-ad5e-5dfacaf83988" width="45%" alt="Q3B Result" />
 </p>
 
-**השוואת יעילות:** דרך ב' (EXISTS) יעילה משמעותית. בדרך א', ה-JOIN שולף את המתאמן כמספר הפעמים שהתאמן באותו חודש, ורק אז מפעיל DISTINCT כבד למחיקת כפילויות. פקודת EXISTS עוצרת את החיפוש (Short-circuit) עבור מתאמן ברגע שנמצא אימון אחד שמתאים לתנאי, מה שחוסך זמן עיבוד יקר.
+**השוואת יעילות:** דרך ב' (EXISTS) יעילה משמעותית. בדרך א', ה-JOIN שולף את המתאמן כמספר הפעמים שהתאמן באותו חודש, ורק אז מפעיל DISTINCT כבד למחיקת כפילויות. פקודת EXISTS עוצרת את החיפוש (Short-circuit) עבור מתאמן ברגע שנמצא אימון אחד שמתאים לתנאי, מה שחוסך זמן עיבוד יקר (ניתן לשים לב שהתוצאות ש2 השאילתות נתנו שונות, אבל זה רק הסדר השתנה, התוצאה עצמה - נשארה אותו הדבר, וסימן לכך הוא שב2 התוצאות מוחזרות בדיוק 466 שורות).
 
 <hr />
 
@@ -259,14 +259,14 @@ FROM BODY_MEASUREMENT M WHERE M.Trainee_ID = 1;
 
 **צילומי מסך - דרך א':**
 <p align="center">
-  <img src="LINK_FOR_Q4A_RUN_PICTURE" width="45%" alt="Q4A Run" />
-  <img src="LINK_FOR_Q4A_RESULT_PICTURE" width="45%" alt="Q4A Result" />
+  <img src="https://github.com/user-attachments/assets/c05de781-f5fd-4da7-8be2-0f0fa9b1a3dc" width="45%" alt="Q4A Run" />
+  <img src="https://github.com/user-attachments/assets/b6d8786e-5046-40e7-bec2-e45c84bd269a" width="45%" alt="Q4A Result" />
 </p>
 
 **צילומי מסך - דרך ב':**
 <p align="center">
-  <img src="LINK_FOR_Q4B_RUN_PICTURE" width="45%" alt="Q4B Run" />
-  <img src="LINK_FOR_Q4B_RESULT_PICTURE" width="45%" alt="Q4B Result" />
+  <img src="https://github.com/user-attachments/assets/1ce0561d-22f7-4214-9b84-2def124b2598" width="45%" alt="Q4B Run" />
+  <img src="https://github.com/user-attachments/assets/b6d8786e-5046-40e7-bec2-e45c84bd269a" width="45%" alt="Q4B Result" />
 </p>
 
 **השוואת יעילות:** דרך א' (JOIN) היא היעילה והנכונה לארכיטקטורה זו. דרך ב' סובלת מ"בעיית ה-N+1": תת-השאילתה המקוננת ב-SELECT מורצת מחדש עבור כל שורה ושורה שחוזרת מטבלת המדידות. ה-JOIN מבצע את ההתאמה בפעולה אחת רציפה עבור כל קבוצת הנתונים.
@@ -287,8 +287,8 @@ GROUP BY EXTRACT(MONTH FROM Log_Date) ORDER BY Workout_Month;
 ```
 
 <p align="center">
-  <img src="LINK_FOR_Q5_RUN_PICTURE" width="45%" alt="Q5 Run" />
-  <img src="LINK_FOR_Q5_RESULT_PICTURE" width="45%" alt="Q5 Result" />
+  <img src="https://github.com/user-attachments/assets/d2901a26-bd7c-48bb-93d1-8e26cf2652b4" width="45%" alt="Q5 Run" />
+  <img src="https://github.com/user-attachments/assets/3322af27-2bfb-46cd-a664-62cc10258f48" width="45%" alt="Q5 Result" />
 </p>
 
 ### שאילתה 6: אפיון תוכניות אימון ארוכות לפי קבוצות שריר
@@ -305,8 +305,8 @@ GROUP BY P.Program_Name, M.Group_Name ORDER BY Total_Exercises DESC;
 ```
 
 <p align="center">
-  <img src="LINK_FOR_Q6_RUN_PICTURE" width="45%" alt="Q6 Run" />
-  <img src="LINK_FOR_Q6_RESULT_PICTURE" width="45%" alt="Q6 Result" />
+  <img src="https://github.com/user-attachments/assets/2e579d10-dd50-4683-928f-c3b9f0f066b5" width="45%" alt="Q6 Run" />
+  <img src="https://github.com/user-attachments/assets/c239d516-4f51-4921-9a48-488659898a9e" width="45%" alt="Q6 Result" />
 </p>
 
 ### שאילתה 7: מעקב תנודות משקל למתאמנים
@@ -321,8 +321,8 @@ ORDER BY Weight_Fluctuation DESC;
 ```
 
 <p align="center">
-  <img src="LINK_FOR_Q7_RUN_PICTURE" width="45%" alt="Q7 Run" />
-  <img src="LINK_FOR_Q7_RESULT_PICTURE" width="45%" alt="Q7 Result" />
+  <img src="https://github.com/user-attachments/assets/d6af260a-417f-47f7-ad0d-6eb0a242742a" width="45%" alt="Q7 Run" />
+  <img src="https://github.com/user-attachments/assets/c626602e-3046-43ed-b0ec-7f81e376fe1d" width="45%" alt="Q7 Result" />
 </p>
 
 ### שאילתה 8: פופולריות של תוכניות אימון בפועל
@@ -336,8 +336,8 @@ GROUP BY P.Program_ID, P.Program_Name, P.Workout_Type ORDER BY Times_Performed D
 ```
 
 <p align="center">
-  <img src="LINK_FOR_Q8_RUN_PICTURE" width="45%" alt="Q8 Run" />
-  <img src="LINK_FOR_Q8_RESULT_PICTURE" width="45%" alt="Q8 Result" />
+  <img src="https://github.com/user-attachments/assets/3fe9ec0e-6f9f-4c8c-b3ab-5e3596de633e" width="45%" alt="Q8 Run" />
+  <img src="https://github.com/user-attachments/assets/c13f4d21-ad40-47e5-a322-08510fd2568e" width="45%" alt="Q8 Result" />
 </p>
 
 <hr />
