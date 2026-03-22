@@ -1,4 +1,3 @@
-<img width="854" height="334" alt="image" src="https://github.com/user-attachments/assets/5de33a72-b068-49cc-9943-afc98eed705a" /><div align="center">
   <h1>🏋️‍♂️ PowerGym Pro - Database Project</h1>
   <p><b>מערכת מתקדמת לניהול מתאמנים, מדדי גוף ותוכניות אימון</b></p>
   
