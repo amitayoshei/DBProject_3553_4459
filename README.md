@@ -86,7 +86,7 @@
 
 ### תרשים DSD (לוגי)
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/e8915f6c-a453-4dd4-a8cd-f64af687adcf" width="800" alt="DSD Diagram" />
+  <img src="https://github.com/user-attachments/assets/f299b465-cb32-441a-9fa8-d03502066527" width="800" alt="DSD Diagram" />
 </p>
 
 <hr />
