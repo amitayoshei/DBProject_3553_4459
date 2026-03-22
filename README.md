@@ -28,6 +28,11 @@
   * [החלטות עיצוב וארכיטקטורה](#-החלטות-עיצוב-וארכיטקטורה)
   * [שיטות הכנסת נתונים](#️-שיטות-הכנסת-נתונים)
   * [גיבוי ושחזור נתונים](#️-גיבוי-ושחזור-נתונים)
+* [🔍 שלב ב': שאילתות ואילוצים](#-שלב-ב-שאילתות-ואילוצים)
+  * [חלק א': שאילתות שליפה (SELECT) כפולות](#חלק-א-שאילתות-שליפה-select-כפולות---השוואת-יעילות)
+  * [חלק ב': שאילתות שליפה (SELECT) מורכבות](#חלק-ב-שאילתות-שליפה-select-מורכבות)
+  * [חלק ג': שאילתות עדכון (UPDATE)](#חלק-ג-שאילתות-עדכון-update)
+  * [חלק ד': שאילתות מחיקה (DELETE)](#חלק-ד-שאילתות-מחיקה-delete)
 
 <hr />
 
@@ -134,4 +139,367 @@
 <p align="center">
   <b>תהליך שחזור מסד הנתונים:</b><br/>
   <img src="https://github.com/user-attachments/assets/190bbfc4-4e47-45b8-adf4-2605f4a4c339" width="700" alt="Restore Process" />
+</p>
+
+<hr />
+
+<hr />
+
+# 🔍 שלב ב': שאילתות ואילוצים
+
+## חלק א': שאילתות שליפה (SELECT) כפולות - השוואת יעילות
+
+### שאילתה 1: שליפת המדידה העדכנית ביותר (עבור דשבורד מתאמן)
+**תיאור השאילתה:** מציגה את המשקל, ה-BMI ואחוזי השומן העדכניים ביותר של מתאמן ספציפי (Trainee_ID = 1).
+
+```sql
+-- דרך א': תת-שאילתה (Subquery)
+SELECT Weight_Kg, BMI_Score, Fat_Percentage, Measurement_Date 
+FROM BODY_MEASUREMENT 
+WHERE Trainee_ID = 1 AND Measurement_Date = (SELECT MAX(Measurement_Date) FROM BODY_MEASUREMENT WHERE Trainee_ID = 1);
+
+-- דרך ב': מיון והגבלה (ORDER BY ו-LIMIT)
+SELECT Weight_Kg, BMI_Score, Fat_Percentage, Measurement_Date 
+FROM BODY_MEASUREMENT 
+WHERE Trainee_ID = 1 ORDER BY Measurement_Date DESC LIMIT 1;
+```
+
+**צילומי מסך - דרך א':**
+<p align="center">
+  <img src="LINK_FOR_Q1A_RUN_PICTURE" width="45%" alt="Q1A Run" />
+  <img src="LINK_FOR_Q1A_RESULT_PICTURE" width="45%" alt="Q1A Result" />
+</p>
+
+**צילומי מסך - דרך ב':**
+<p align="center">
+  <img src="LINK_FOR_Q1B_RUN_PICTURE" width="45%" alt="Q1B Run" />
+  <img src="LINK_FOR_Q1B_RESULT_PICTURE" width="45%" alt="Q1B Result" />
+</p>
+
+**השוואת יעילות:** דרך ב' (LIMIT) יעילה יותר. בדרך א', מסד הנתונים נדרש לבצע שתי סריקות נפרדות של הטבלה (אחת למציאת תאריך המקסימום ואחת לשליפת הרשומה עצמה). בדרך ב', מסד הנתונים פשוט ממיין ושולף מיד את השורה הראשונה בלבד, מה שחוסך סריקה כפולה ומשפר ביצועים.
+
+<hr />
+
+### שאילתה 2: רשימת תרגילים וציוד בתוכנית (עבור מסך פרטי תוכנית)
+**תיאור השאילתה:** שליפת כל שמות התרגילים והציוד הנדרש עבור תוכנית אימון ספציפית (Program_ID = 1).
+
+```sql
+-- דרך א': שימוש ב-JOIN
+SELECT E.Exercise_Name, E.Equipment_Needed 
+FROM EXERCISE E JOIN INCLUDES I ON E.Exercise_ID = I.Exercise_ID 
+WHERE I.Program_ID = 1;
+
+-- דרך ב': שימוש ב-IN עם תת-שאילתה
+SELECT Exercise_Name, Equipment_Needed 
+FROM EXERCISE WHERE Exercise_ID IN (SELECT Exercise_ID FROM INCLUDES WHERE Program_ID = 1);
+```
+
+**צילומי מסך - דרך א':**
+<p align="center">
+  <img src="LINK_FOR_Q2A_RUN_PICTURE" width="45%" alt="Q2A Run" />
+  <img src="LINK_FOR_Q2A_RESULT_PICTURE" width="45%" alt="Q2A Result" />
+</p>
+
+**צילומי מסך - דרך ב':**
+<p align="center">
+  <img src="LINK_FOR_Q2B_RUN_PICTURE" width="45%" alt="Q2B Run" />
+  <img src="LINK_FOR_Q2B_RESULT_PICTURE" width="45%" alt="Q2B Result" />
+</p>
+
+**השוואת יעילות:** דרך א' (JOIN) עוברת אופטימיזציה טובה יותר במנועי SQL. בשימוש ב-IN, במידה ותת-השאילתה מחזירה תוצאות רבות, המנוע עלול לבצע סריקה אטית של הטבלה החיצונית עבור כל ערך. ה-JOIN מיועד לקישור רלציוני כזה ופועל כיחידה אחת יעילה.
+
+<hr />
+
+### שאילתה 3: מתאמנים פעילים החודש
+**תיאור השאילתה:** מציאת מתאמנים שביצעו לפחות אימון אחד בחודש פברואר 2024 (פירוק תאריכים).
+
+```sql
+-- דרך א': שימוש ב-JOIN ו-DISTINCT
+SELECT DISTINCT T.Trainee_ID, T.Gender, T.Join_Date 
+FROM TRAINEE_PROFILE T JOIN WORKOUT_LOG W ON T.Trainee_ID = W.Trainee_ID 
+WHERE EXTRACT(MONTH FROM W.Log_Date) = 2 AND EXTRACT(YEAR FROM W.Log_Date) = 2024;
+
+-- דרך ב': שימוש ב-EXISTS
+SELECT Trainee_ID, Gender, Join_Date 
+FROM TRAINEE_PROFILE T WHERE EXISTS (
+    SELECT 1 FROM WORKOUT_LOG W WHERE W.Trainee_ID = T.Trainee_ID 
+    AND EXTRACT(MONTH FROM W.Log_Date) = 2 AND EXTRACT(YEAR FROM W.Log_Date) = 2024);
+```
+
+**צילומי מסך - דרך א':**
+<p align="center">
+  <img src="LINK_FOR_Q3A_RUN_PICTURE" width="45%" alt="Q3A Run" />
+  <img src="LINK_FOR_Q3A_RESULT_PICTURE" width="45%" alt="Q3A Result" />
+</p>
+
+**צילומי מסך - דרך ב':**
+<p align="center">
+  <img src="LINK_FOR_Q3B_RUN_PICTURE" width="45%" alt="Q3B Run" />
+  <img src="LINK_FOR_Q3B_RESULT_PICTURE" width="45%" alt="Q3B Result" />
+</p>
+
+**השוואת יעילות:** דרך ב' (EXISTS) יעילה משמעותית. בדרך א', ה-JOIN שולף את המתאמן כמספר הפעמים שהתאמן באותו חודש, ורק אז מפעיל DISTINCT כבד למחיקת כפילויות. פקודת EXISTS עוצרת את החיפוש (Short-circuit) עבור מתאמן ברגע שנמצא אימון אחד שמתאים לתנאי, מה שחוסך זמן עיבוד יקר.
+
+<hr />
+
+### שאילתה 4: השוואת משקל נוכחי ליעד (עבור היסטוריית מדידות)
+**תיאור השאילתה:** הצגת כל המדידות של מתאמן ספציפי לצד משקל היעד המוגדר שלו בטבלת היעדים.
+
+```sql
+-- דרך א': שימוש ב-JOIN
+SELECT M.Measurement_Date, M.Weight_Kg, G.Target_Weight_Kg 
+FROM BODY_MEASUREMENT M JOIN TRAINEE_GOAL G ON M.Trainee_ID = G.Trainee_ID 
+WHERE M.Trainee_ID = 1;
+
+-- דרך ב': תת-שאילתה מקוננת ב-SELECT
+SELECT M.Measurement_Date, M.Weight_Kg, 
+       (SELECT G.Target_Weight_Kg FROM TRAINEE_GOAL G WHERE G.Trainee_ID = M.Trainee_ID LIMIT 1) AS Target_Weight_Kg
+FROM BODY_MEASUREMENT M WHERE M.Trainee_ID = 1;
+```
+
+**צילומי מסך - דרך א':**
+<p align="center">
+  <img src="LINK_FOR_Q4A_RUN_PICTURE" width="45%" alt="Q4A Run" />
+  <img src="LINK_FOR_Q4A_RESULT_PICTURE" width="45%" alt="Q4A Result" />
+</p>
+
+**צילומי מסך - דרך ב':**
+<p align="center">
+  <img src="LINK_FOR_Q4B_RUN_PICTURE" width="45%" alt="Q4B Run" />
+  <img src="LINK_FOR_Q4B_RESULT_PICTURE" width="45%" alt="Q4B Result" />
+</p>
+
+**השוואת יעילות:** דרך א' (JOIN) היא היעילה והנכונה לארכיטקטורה זו. דרך ב' סובלת מ"בעיית ה-N+1": תת-השאילתה המקוננת ב-SELECT מורצת מחדש עבור כל שורה ושורה שחוזרת מטבלת המדידות. ה-JOIN מבצע את ההתאמה בפעולה אחת רציפה עבור כל קבוצת הנתונים.
+
+<hr />
+
+## חלק ב': שאילתות שליפה (SELECT) מורכבות
+
+### שאילתה 5: סיכום שריפת קלוריות ודופק לפי חודשים
+**תיאור השאילתה:** הצגת סיכום חודשי למתאמן ספציפי הכולל את כמות האימונים, סך הקלוריות שנשרפו וממוצע הדופק בשנת 2024.
+
+```sql
+SELECT EXTRACT(MONTH FROM Log_Date) AS Workout_Month, COUNT(Log_ID) AS Total_Workouts, 
+       SUM(Total_Calories_Burned) AS Total_Calories, ROUND(AVG(Average_Heart_Rate), 1) AS Avg_Heart_Rate 
+FROM WORKOUT_LOG 
+WHERE Trainee_ID = 1 AND EXTRACT(YEAR FROM Log_Date) = 2024 
+GROUP BY EXTRACT(MONTH FROM Log_Date) ORDER BY Workout_Month;
+```
+
+<p align="center">
+  <img src="LINK_FOR_Q5_RUN_PICTURE" width="45%" alt="Q5 Run" />
+  <img src="LINK_FOR_Q5_RESULT_PICTURE" width="45%" alt="Q5 Result" />
+</p>
+
+### שאילתה 6: אפיון תוכניות אימון ארוכות לפי קבוצות שריר
+**תיאור השאילתה:** הצגת התוכניות במערכת שאורכן מעל 45 דקות, לצד קבוצת השריר המרכזית וכמות התרגילים בכל תוכנית (שילוב 4 טבלאות).
+
+```sql
+SELECT P.Program_Name, M.Group_Name, COUNT(I.Exercise_ID) AS Total_Exercises 
+FROM TRAINING_PROGRAM P 
+JOIN INCLUDES I ON P.Program_ID = I.Program_ID 
+JOIN EXERCISE E ON I.Exercise_ID = E.Exercise_ID 
+JOIN MUSCLE_GROUP M ON E.Muscle_Group_ID = M.Muscle_Group_ID 
+WHERE P.Estimated_Duration_Minutes > 45 
+GROUP BY P.Program_Name, M.Group_Name ORDER BY Total_Exercises DESC;
+```
+
+<p align="center">
+  <img src="LINK_FOR_Q6_RUN_PICTURE" width="45%" alt="Q6 Run" />
+  <img src="LINK_FOR_Q6_RESULT_PICTURE" width="45%" alt="Q6 Result" />
+</p>
+
+### שאילתה 7: מעקב תנודות משקל למתאמנים
+**תיאור השאילתה:** מציאת הפער בין המשקל המקסימלי למינימלי של כל מתאמן, והצגת מתאמנים עם פער של יותר מ-2 ק"ג בלבד.
+
+```sql
+SELECT T.Trainee_ID, T.Gender, MAX(M.Weight_Kg) AS Max_Weight, MIN(M.Weight_Kg) AS Min_Weight, 
+       (MAX(M.Weight_Kg) - MIN(M.Weight_Kg)) AS Weight_Fluctuation 
+FROM TRAINEE_PROFILE T JOIN BODY_MEASUREMENT M ON T.Trainee_ID = M.Trainee_ID 
+GROUP BY T.Trainee_ID, T.Gender HAVING (MAX(M.Weight_Kg) - MIN(M.Weight_Kg)) > 2 
+ORDER BY Weight_Fluctuation DESC;
+```
+
+<p align="center">
+  <img src="LINK_FOR_Q7_RUN_PICTURE" width="45%" alt="Q7 Run" />
+  <img src="LINK_FOR_Q7_RESULT_PICTURE" width="45%" alt="Q7 Result" />
+</p>
+
+### שאילתה 8: פופולריות של תוכניות אימון בפועל
+**תיאור השאילתה:** בדיקה אילו תוכניות אימון בוצעו הכי הרבה פעמים בפועל על ידי מתאמנים, כולל תוכניות שלא בוצעו מעולם (שימוש ב-LEFT JOIN).
+
+```sql
+SELECT P.Program_Name, P.Workout_Type, COUNT(W.Log_ID) AS Times_Performed, 
+       COALESCE(SUM(W.Duration_Minutes), 0) AS Total_Minutes_Spent 
+FROM TRAINING_PROGRAM P LEFT JOIN WORKOUT_LOG W ON P.Program_ID = W.Program_ID 
+GROUP BY P.Program_ID, P.Program_Name, P.Workout_Type ORDER BY Times_Performed DESC;
+```
+
+<p align="center">
+  <img src="LINK_FOR_Q8_RUN_PICTURE" width="45%" alt="Q8 Run" />
+  <img src="LINK_FOR_Q8_RESULT_PICTURE" width="45%" alt="Q8 Result" />
+</p>
+
+<hr />
+
+## חלק ג': שאילתות עדכון (UPDATE)
+
+### עדכון 1: סימון יעדים שהושגו
+**תיאור השאילתה:** מעדכן את סטטוס היעד (`Is_Achieved`) ל-true עבור מתאמנים שהמשקל הנוכחי שלהם (בטבלת המדידות) הגיע למשקל היעד שהוגדר או ירד ממנו.
+
+```sql
+UPDATE TRAINEE_GOAL
+SET Is_Achieved = true
+WHERE Trainee_ID IN (
+    SELECT G.Trainee_ID FROM TRAINEE_GOAL G
+    JOIN BODY_MEASUREMENT M ON G.Trainee_ID = M.Trainee_ID
+    WHERE M.Weight_Kg <= G.Target_Weight_Kg AND G.Is_Achieved = false
+);
+```
+
+**צילומי מסך:**
+<p align="center">
+  <b>לפני העדכון:</b><br/>
+  <img src="LINK_FOR_UPDATE1_BEFORE_PICTURE" width="600" alt="Update 1 Before" />
+</p>
+<p align="center">
+  <b>הרצת השאילתה:</b><br/>
+  <img src="LINK_FOR_UPDATE1_RUN_PICTURE" width="600" alt="Update 1 Run" />
+</p>
+<p align="center">
+  <b>אחרי העדכון:</b><br/>
+  <img src="LINK_FOR_UPDATE1_AFTER_PICTURE" width="600" alt="Update 1 After" />
+</p>
+
+<hr />
+
+### עדכון 2: הארכת שכירות לוקר למתאמנים ותיקים
+**תיאור השאילתה:** מוסיף 30 ימים לתאריך סיום ההשכרה של הלוקר עבור מתאמנים שהצטרפו למכון לפני שנת 2024.
+
+```sql
+UPDATE LOCKER
+SET Rental_End_Date = Rental_End_Date + 30
+WHERE Trainee_ID IN (
+    SELECT Trainee_ID FROM TRAINEE_PROFILE WHERE EXTRACT(YEAR FROM Join_Date) < 2024
+);
+```
+
+**צילומי מסך:**
+<p align="center">
+  <b>לפני העדכון:</b><br/>
+  <img src="LINK_FOR_UPDATE2_BEFORE_PICTURE" width="600" alt="Update 2 Before" />
+</p>
+<p align="center">
+  <b>הרצת השאילתה:</b><br/>
+  <img src="LINK_FOR_UPDATE2_RUN_PICTURE" width="600" alt="Update 2 Run" />
+</p>
+<p align="center">
+  <b>אחרי העדכון:</b><br/>
+  <img src="LINK_FOR_UPDATE2_AFTER_PICTURE" width="600" alt="Update 2 After" />
+</p>
+
+<hr />
+
+### עדכון 3: העלאת רמת קושי לתוכניות ארוכות
+**תיאור השאילתה:** משנה את רמת הקושי ל-5 עבור תוכניות אימון שמשך הביצוע הממוצע שלהן בפועל (לפי היומנים) גדול מ-70 דקות.
+
+```sql
+UPDATE TRAINING_PROGRAM
+SET Difficulty_Level = 5
+WHERE Program_ID IN (
+    SELECT Program_ID FROM WORKOUT_LOG GROUP BY Program_ID HAVING AVG(Duration_Minutes) > 70
+) AND Difficulty_Level < 5;
+```
+
+**צילומי מסך:**
+<p align="center">
+  <b>לפני העדכון:</b><br/>
+  <img src="LINK_FOR_UPDATE3_BEFORE_PICTURE" width="600" alt="Update 3 Before" />
+</p>
+<p align="center">
+  <b>הרצת השאילתה:</b><br/>
+  <img src="LINK_FOR_UPDATE3_RUN_PICTURE" width="600" alt="Update 3 Run" />
+</p>
+<p align="center">
+  <b>אחרי העדכון:</b><br/>
+  <img src="LINK_FOR_UPDATE3_AFTER_PICTURE" width="600" alt="Update 3 After" />
+</p>
+
+<hr />
+
+## חלק ד': שאילתות מחיקה (DELETE)
+
+### מחיקה 1: הסרת שיוך לתוכניות עבור מתאמני סיבולת
+**תיאור השאילתה:** מוחק מהטבלה המקשרת (`HAS_PROGRAM`) את השיוך לתוכניות אימון עבור כל המתאמנים שהמטרה המרכזית שלהם היא 'Endurance' (סיבולת).
+
+```sql
+DELETE FROM HAS_PROGRAM
+WHERE Trainee_ID IN (
+    SELECT Trainee_ID FROM TRAINEE_PROFILE WHERE Main_Goal = 'Endurance'
+);
+```
+
+**צילומי מסך:**
+<p align="center">
+  <b>לפני המחיקה:</b><br/>
+  <img src="LINK_FOR_DELETE1_BEFORE_PICTURE" width="600" alt="Delete 1 Before" />
+</p>
+<p align="center">
+  <b>הרצת השאילתה:</b><br/>
+  <img src="LINK_FOR_DELETE1_RUN_PICTURE" width="600" alt="Delete 1 Run" />
+</p>
+<p align="center">
+  <b>אחרי המחיקה:</b><br/>
+  <img src="LINK_FOR_DELETE1_AFTER_PICTURE" width="600" alt="Delete 1 After" />
+</p>
+
+<hr />
+
+### מחיקה 2: ניקוי יומני אימון קצרים לתוכניות מתחילים
+**תיאור השאילתה:** מוחק רשומות מיומן האימון שבהן נשרפו פחות מ-350 קלוריות, אך ורק אם הן שייכות לתוכנית אימון ברמת קושי של מתחילים (רמה 1).
+
+```sql
+DELETE FROM WORKOUT_LOG
+WHERE Total_Calories_Burned < 350
+  AND Program_ID IN (SELECT Program_ID FROM TRAINING_PROGRAM WHERE Difficulty_Level = 1);
+```
+
+**צילומי מסך:**
+<p align="center">
+  <b>לפני המחיקה:</b><br/>
+  <img src="LINK_FOR_DELETE2_BEFORE_PICTURE" width="600" alt="Delete 2 Before" />
+</p>
+<p align="center">
+  <b>הרצת השאילתה:</b><br/>
+  <img src="LINK_FOR_DELETE2_RUN_PICTURE" width="600" alt="Delete 2 Run" />
+</p>
+<p align="center">
+  <b>אחרי המחיקה:</b><br/>
+  <img src="LINK_FOR_DELETE2_AFTER_PICTURE" width="600" alt="Delete 2 After" />
+</p>
+
+<hr />
+
+### מחיקה 3: ניקוי היסטוריית מדידות למתאמנים שהשיגו יעד
+**תיאור השאילתה:** מוחק את כל מדידות הגוף הישנות של מתאמנים שהוגדר להם במערכת כי הם כבר השיגו את יעד המשקל שלהם (`Is_Achieved = true`).
+
+```sql
+DELETE FROM BODY_MEASUREMENT
+WHERE Trainee_ID IN (
+    SELECT Trainee_ID FROM TRAINEE_GOAL WHERE Is_Achieved = true
+);
+```
+
+**צילומי מסך:**
+<p align="center">
+  <b>לפני המחיקה:</b><br/>
+  <img src="LINK_FOR_DELETE3_BEFORE_PICTURE" width="600" alt="Delete 3 Before" />
+</p>
+<p align="center">
+  <b>הרצת השאילתה:</b><br/>
+  <img src="LINK_FOR_DELETE3_RUN_PICTURE" width="600" alt="Delete 3 Run" />
+</p>
+<p align="center">
+  <b>אחרי המחיקה:</b><br/>
+  <img src="LINK_FOR_DELETE3_AFTER_PICTURE" width="600" alt="Delete 3 After" />
 </p>
