@@ -342,7 +342,7 @@ GROUP BY P.Program_ID, P.Program_Name, P.Workout_Type ORDER BY Times_Performed D
 
 <hr />
 
-## חלק ג': שאילתות עדכון (UPDATE)
+## חלק ב': שאילתות עדכון (UPDATE)
 
 ### עדכון 1: סימון יעדים שהושגו
 **תיאור השאילתה:** מעדכן את סטטוס היעד (`Is_Achieved`) ל-true עבור מתאמנים שהמשקל הנוכחי שלהם (בטבלת המדידות) הגיע למשקל היעד שהוגדר או ירד ממנו.
@@ -360,42 +360,48 @@ WHERE Trainee_ID IN (
 **צילומי מסך:**
 <p align="center">
   <b>לפני העדכון:</b><br/>
-  <img src="LINK_FOR_UPDATE1_BEFORE_PICTURE" width="600" alt="Update 1 Before" />
+  <img src="https://github.com/user-attachments/assets/76f28d51-06fa-4aa1-b081-0804662c0ddc" width="600" alt="Update 1 Before" />
 </p>
 <p align="center">
   <b>הרצת השאילתה:</b><br/>
-  <img src="LINK_FOR_UPDATE1_RUN_PICTURE" width="600" alt="Update 1 Run" />
+  <img src="https://github.com/user-attachments/assets/640ca25d-e659-4aaf-a500-746bea0ee87c" width="600" alt="Update 1 Run" />
 </p>
 <p align="center">
   <b>אחרי העדכון:</b><br/>
-  <img src="LINK_FOR_UPDATE1_AFTER_PICTURE" width="600" alt="Update 1 After" />
+  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Update 1 After" />
 </p>
 
 <hr />
 
 ### עדכון 2: הארכת שכירות לוקר למתאמנים ותיקים
-**תיאור השאילתה:** מוסיף 30 ימים לתאריך סיום ההשכרה של הלוקר עבור מתאמנים שהצטרפו למכון לפני שנת 2024.
-
+**תיאור השאילתה:** מתקנת הקצאות לוקרים שגויות על ידי הבטחה מתאמנים גברים מועברים לחדר ההלבשה לגברים ומתאמנות נשים מועברות לחדר ההלבשה לנשים.
 ```sql
-UPDATE LOCKER
-SET Rental_End_Date = Rental_End_Date + 30
-WHERE Trainee_ID IN (
-    SELECT Trainee_ID FROM TRAINEE_PROFILE WHERE EXTRACT(YEAR FROM Join_Date) < 2024
-);
+UPDATE Locker
+SET Location_Zone = CASE 
+    WHEN Trainee_Profile.Gender = 'Male' THEN 'Men Locker Room'
+    WHEN Trainee_Profile.Gender = 'Female' THEN 'Women Locker Room'
+END
+FROM Trainee_Profile
+WHERE Locker.Trainee_ID = Trainee_Profile.Trainee_ID
+  AND (
+    (Trainee_Profile.Gender = 'Male' AND Locker.Location_Zone = 'Women Locker Room')
+    OR 
+    (Trainee_Profile.Gender = 'Female' AND Locker.Location_Zone = 'Men Locker Room')
+  );
 ```
 
 **צילומי מסך:**
 <p align="center">
   <b>לפני העדכון:</b><br/>
-  <img src="LINK_FOR_UPDATE2_BEFORE_PICTURE" width="600" alt="Update 2 Before" />
+  <img src="https://github.com/user-attachments/assets/6b3c2687-4bd5-4c98-885b-fc4ec2db8c1b" width="600" alt="Update 2 Before" />
 </p>
 <p align="center">
   <b>הרצת השאילתה:</b><br/>
-  <img src="LINK_FOR_UPDATE2_RUN_PICTURE" width="600" alt="Update 2 Run" />
+  <img src="https://github.com/user-attachments/assets/57c1ac09-eb7f-4649-a363-78d3b7d97741" width="600" alt="Update 2 Run" />
 </p>
 <p align="center">
   <b>אחרי העדכון:</b><br/>
-  <img src="LINK_FOR_UPDATE2_AFTER_PICTURE" width="600" alt="Update 2 After" />
+  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Update 2 After" />
 </p>
 
 <hr />
@@ -414,20 +420,20 @@ WHERE Program_ID IN (
 **צילומי מסך:**
 <p align="center">
   <b>לפני העדכון:</b><br/>
-  <img src="LINK_FOR_UPDATE3_BEFORE_PICTURE" width="600" alt="Update 3 Before" />
+  <img src="https://github.com/user-attachments/assets/06b3f6e0-d39b-4a5c-9208-a6988e6cf96c" width="600" alt="Update 3 Before" />
 </p>
 <p align="center">
   <b>הרצת השאילתה:</b><br/>
-  <img src="LINK_FOR_UPDATE3_RUN_PICTURE" width="600" alt="Update 3 Run" />
+  <img src="https://github.com/user-attachments/assets/eae9dd5f-d6ed-4bca-b4bf-a2c51689a345" width="600" alt="Update 3 Run" />
 </p>
 <p align="center">
   <b>אחרי העדכון:</b><br/>
-  <img src="LINK_FOR_UPDATE3_AFTER_PICTURE" width="600" alt="Update 3 After" />
+  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Update 3 After" />
 </p>
 
 <hr />
 
-## חלק ד': שאילתות מחיקה (DELETE)
+## חלק ג': שאילתות מחיקה (DELETE)
 
 ### מחיקה 1: הסרת שיוך לתוכניות עבור מתאמני סיבולת
 **תיאור השאילתה:** מוחק מהטבלה המקשרת (`HAS_PROGRAM`) את השיוך לתוכניות אימון עבור כל המתאמנים שהמטרה המרכזית שלהם היא 'Endurance' (סיבולת).
@@ -455,27 +461,31 @@ WHERE Trainee_ID IN (
 
 <hr />
 
-### מחיקה 2: ניקוי יומני אימון קצרים לתוכניות מתחילים
-**תיאור השאילתה:** מוחק רשומות מיומן האימון שבהן נשרפו פחות מ-350 קלוריות, אך ורק אם הן שייכות לתוכנית אימון ברמת קושי של מתחילים (רמה 1).
+### מחיקה 2: הסר מדידות משקל גבוהות עבור מתאמנים גברים
+**תיאור השאילתה:** מוחק את כל הרשומות שבהם הגברים שוקלים יותר מ 119 קילוגרמים.
 
 ```sql
-DELETE FROM WORKOUT_LOG
-WHERE Total_Calories_Burned < 350
-  AND Program_ID IN (SELECT Program_ID FROM TRAINING_PROGRAM WHERE Difficulty_Level = 1);
+DELETE FROM BODY_MEASUREMENT
+WHERE Weight_Kg > 119
+  AND Trainee_ID IN (
+      SELECT Trainee_ID
+      FROM TRAINEE_PROFILE
+      WHERE Gender = 'Male'
+  );
 ```
 
 **צילומי מסך:**
 <p align="center">
   <b>לפני המחיקה:</b><br/>
-  <img src="LINK_FOR_DELETE2_BEFORE_PICTURE" width="600" alt="Delete 2 Before" />
+  <img src="https://github.com/user-attachments/assets/96d61a7d-e9e4-4aef-a175-d25c23b793c0" width="600" alt="Delete 2 Before" />
 </p>
 <p align="center">
   <b>הרצת השאילתה:</b><br/>
-  <img src="LINK_FOR_DELETE2_RUN_PICTURE" width="600" alt="Delete 2 Run" />
+  <img src="https://github.com/user-attachments/assets/e823d563-7e2b-482c-954b-14072a605546" width="600" alt="Delete 2 Run" />
 </p>
 <p align="center">
   <b>אחרי המחיקה:</b><br/>
-  <img src="LINK_FOR_DELETE2_AFTER_PICTURE" width="600" alt="Delete 2 After" />
+  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 2 After" />
 </p>
 
 <hr />
