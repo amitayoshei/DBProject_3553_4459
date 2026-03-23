@@ -558,11 +558,11 @@ VALUES (501, 'VIP Zone', NULL, 1);
 **צילומי שגיאת הרצה:**
 <p align="center">
   <b>הפרה 1 - תאריך ללא מתאמן:</b><br/>
-  <img src="LINK_FOR_LOCKER_ERROR_1_PICTURE" width="700" alt="Locker Constraint Error 1" />
+  <img src="https://github.com/user-attachments/assets/6fa146cb-c946-49ef-ade6-5963cb50cf7f" width="700" alt="Locker Constraint Error 1" />
 </p>
 <p align="center">
   <b>הפרה 2 - מתאמן ללא תאריך:</b><br/>
-  <img src="LINK_FOR_LOCKER_ERROR_2_PICTURE" width="700" alt="Locker Constraint Error 2" />
+  <img src="https://github.com/user-attachments/assets/b843cfdd-112c-4ae0-8f0c-cfb6ad2f9310" width="700" alt="Locker Constraint Error 2" />
 </p>
 
 ---
@@ -586,7 +586,7 @@ VALUES (501, '2015-01-01', '2025-01-01', 'Male', 'Flexing & Aura', NULL, 'Yair Z
 
 **צילום שגיאת הרצה:**
 <p align="center">
-  <img src="LINK_FOR_AGE_CONSTRAINT_ERROR_PICTURE" width="700" alt="Age Constraint Error" />
+  <img src="https://github.com/user-attachments/assets/5f2644ab-f66f-4542-981b-c22bcb48f893" width="700" alt="Age Constraint Error" />
 </p>
 
 <hr />
@@ -610,15 +610,15 @@ ROLLBACK;
 **מצב מסד הנתונים בכל שלב:**
 <p align="center">
   <b>1. לפני תחילת התהליך (תאריך מקורי: 2007-09-24):</b><br/>
-  <img src="LINK_FOR_ROLLBACK_BEFORE_PICTURE" width="400" alt="Before Rollback" />
+  <img src="https://github.com/user-attachments/assets/d6f8f87f-2d62-4deb-82fa-c8031a8dc49e" width="400" alt="Before Rollback" />
 </p>
 <p align="center">
   <b>2. בתוך הבלוק, לפני הביטול (התאריך השתנה ל-2001-01-01):</b><br/>
-  <img src="LINK_FOR_ROLLBACK_DURING_PICTURE" width="400" alt="During Rollback" />
+  <img src="https://github.com/user-attachments/assets/de770203-e48d-4e61-9d17-a75bbc22ff2f" width="400" alt="During Rollback" />
 </p>
 <p align="center">
   <b>3. אחרי ה-ROLLBACK (הנתון חזר לתאריך המקורי):</b><br/>
-  <img src="LINK_FOR_ROLLBACK_AFTER_PICTURE" width="400" alt="After Rollback" />
+  <img src="https://github.com/user-attachments/assets/5af6658c-821f-4d4e-af32-841413a9da8f" width="400" alt="After Rollback" />
 </p>
 
 <hr />
@@ -640,13 +640,13 @@ COMMIT;
 **מצב מסד הנתונים בכל שלב:**
 <p align="center">
   <b>1. לפני תחילת התהליך (תאריך מקורי: 2026-02-01):</b><br/>
-  <img src="LINK_FOR_COMMIT_BEFORE_PICTURE" width="400" alt="Before Commit" />
+  <img src="https://github.com/user-attachments/assets/fb05de79-76a7-49e3-bf48-e098ed425639" width="400" alt="Before Commit" />
 </p>
 <p align="center">
   <b>2. בתוך הבלוק, לאחר העדכון (התאריך השתנה ל-2025-01-01):</b><br/>
-  <img src="LINK_FOR_COMMIT_DURING_PICTURE" width="400" alt="During Commit" />
+  <img src="https://github.com/user-attachments/assets/e797df24-71d4-46f0-a7cf-a8950139802d" width="400" alt="During Commit" />
 </p>
 <p align="center">
   <b>3. אחרי ה-COMMIT (הנתון נשמר ונשאר על 2025-01-01):</b><br/>
-  <img src="LINK_FOR_COMMIT_AFTER_PICTURE" width="400" alt="After Commit" />
+  <img src="https://github.com/user-attachments/assets/121555b4-9c25-49e3-901d-ab96b99e7e33" width="400" alt="After Commit" />
 </p>
