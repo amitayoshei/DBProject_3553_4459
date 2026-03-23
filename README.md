@@ -33,8 +33,8 @@
   * [חלק א'2: שאילתות שליפה (SELECT) מורכבות](#חלק-א2-שאילתות-שליפה-select-מורכבות)
   * [חלק ב': שאילתות עדכון (UPDATE)](#חלק-ב-שאילתות-עדכון-update)
   * [חלק ג': שאילתות מחיקה (DELETE)](#חלק-ג-שאילתות-מחיקה-delete)
-  * [חלק ה': אילוצים (ALTER TABLE)](#חלק-ד-אילוצים-alter-table)
-  * [חלק ו': ניהול עסקאות (Transactions) - COMMIT / ROLLBACK](#חלק-ה-ניהול-עסקאות-transactions---commit--rollback)
+  * [חלק ד': אילוצים (ALTER TABLE)](#חלק-ד-אילוצים-alter-table)
+  * [חלק ה': ניהול עסקאות (Transactions) - COMMIT / ROLLBACK](#חלק-ה-ניהול-עסקאות-transactions---commit--rollback)
 
 <hr />
 
