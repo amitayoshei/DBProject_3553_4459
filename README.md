@@ -29,11 +29,11 @@
   * [שיטות הכנסת נתונים](#️-שיטות-הכנסת-נתונים)
   * [גיבוי ושחזור נתונים](#️-גיבוי-ושחזור-נתונים)
 * [🔍 שלב ב': שאילתות ואילוצים](#-שלב-ב-שאילתות-ואילוצים)
-  * [חלק א'1: שאילתות שליפה (SELECT) כפולות](#חלק-א1-שאילתות-שליפה-select-כפולות---השוואת-יעילות)
-  * [חלק א'2: שאילתות שליפה (SELECT) מורכבות](#חלק-א2-שאילתות-שליפה-select-מורכבות)
-  * [חלק ב': שאילתות עדכון (UPDATE)](#חלק-ב-שאילתות-עדכון-update)
-  * [חלק ג': שאילתות מחיקה (DELETE)](#חלק-ג-שאילתות-מחיקה-delete)
-  * [חלק ד': אילוצים (ALTER TABLE)](#חלק-ד-אילוצים-alter-table)
+  * [חלק א': עדכוני סכמה ואילוצים (DDL & Constraints)](#חלק-א-עדכוני-סכמה-ואילוצים-ddl--constraints)
+  * [חלק ב': טיוב נתונים ולוגיקה עסקית (UPDATE)](#חלק-ב-טיוב-נתונים-ולוגיקה-עסקית-update)
+  * [חלק ג': ניקוי נתונים (DELETE)](#חלק-ג-ניקוי-נתונים-delete)
+  * [חלק ד'1: שאילתות שליפה (SELECT) כפולות - השוואת יעילות](#חלק-ד1-שאילתות-שליפה-select-כפולות---השוואת-יעילות)
+  * [חלק ד'2: שאילתות שליפה (SELECT) מורכבות](#חלק-ד2-שאילתות-שליפה-select-מורכבות)
   * [חלק ה': ניהול עסקאות (Transactions) - COMMIT / ROLLBACK](#חלק-ה-ניהול-עסקאות-transactions---commit--rollback)
 
 <hr />
@@ -149,441 +149,34 @@
 
 # 🔍 שלב ב': שאילתות ואילוצים
 
-## חלק א'1: שאילתות שליפה (SELECT) כפולות - השוואת יעילות
+בשלב זה התמקדנו ביישום הלוגיקה העסקית, הבטחת שלמות הנתונים ושליפת מידע מורכב. בחרנו לפעול בצורה מתודולוגית: תחילה הוספנו אילוצי מערכת מתקדמים, לאחר מכן טיבנו וניקינו את הנתונים (UPDATE ו-DELETE), ורק לבסוף ביצענו את שאילתות השליפה (SELECT) על גבי נתונים מדויקים והגיוניים.
 
-### שאילתה 1: שליפת המדידה העדכנית ביותר (עבור דשבורד מתאמן)
-**תיאור השאילתה:** מציגה את המשקל, ה-BMI ואחוזי השומן העדכניים ביותר של מתאמן ספציפי (Trainee_ID = 1).
+## חלק א': עדכוני סכמה ואילוצים (DDL & Constraints)
 
-```sql
--- דרך א': תת-שאילתה (Subquery)
-SELECT Weight_Kg, BMI_Score, Fat_Percentage, Measurement_Date 
-FROM BODY_MEASUREMENT 
-WHERE Trainee_ID = 1 AND Measurement_Date = (SELECT MAX(Measurement_Date) FROM BODY_MEASUREMENT WHERE Trainee_ID = 1);
-
--- דרך ב': מיון והגבלה (ORDER BY ו-LIMIT)
-SELECT Weight_Kg, BMI_Score, Fat_Percentage, Measurement_Date 
-FROM BODY_MEASUREMENT 
-WHERE Trainee_ID = 1 ORDER BY Measurement_Date DESC LIMIT 1;
-```
-
-**צילומי מסך - דרך א':**
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/15601e4c-7f1b-40d8-b61f-cce2b7cc65c6" width="45%" alt="Q1A Run" />
-  <img src="https://github.com/user-attachments/assets/32a6e39c-2eb4-4431-be56-b9a3f6988c94" width="45%" alt="Q1A Result" />
-</p>
-
-**צילומי מסך - דרך ב':**
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/6bf64199-c8bb-4f89-9cc7-b2f2de7aa42b" width="45%" alt="Q1B Run" />
-  <img src="https://github.com/user-attachments/assets/32a6e39c-2eb4-4431-be56-b9a3f6988c94" width="45%" alt="Q1B Result" />
-</p>
-
-**השוואת יעילות:** דרך ב' (LIMIT) יעילה יותר. בדרך א', מסד הנתונים נדרש לבצע שתי סריקות נפרדות של הטבלה (אחת למציאת תאריך המקסימום ואחת לשליפת הרשומה עצמה). בדרך ב', מסד הנתונים פשוט ממיין ושולף מיד את השורה הראשונה בלבד, מה שחוסך סריקה כפולה ומשפר ביצועים.
-
-<hr />
-
-### שאילתה 2: רשימת תרגילים וציוד בתוכנית (עבור מסך פרטי תוכנית)
-**תיאור השאילתה:** שליפת כל שמות התרגילים והציוד הנדרש עבור תוכנית אימון ספציפית (Program_ID = 1).
-
-```sql
--- דרך א': שימוש ב-JOIN
-SELECT E.Exercise_Name, E.Equipment_Needed 
-FROM EXERCISE E JOIN INCLUDES I ON E.Exercise_ID = I.Exercise_ID 
-WHERE I.Program_ID = 1;
-
--- דרך ב': שימוש ב-IN עם תת-שאילתה
-SELECT Exercise_Name, Equipment_Needed 
-FROM EXERCISE WHERE Exercise_ID IN (SELECT Exercise_ID FROM INCLUDES WHERE Program_ID = 1);
-```
-
-**צילומי מסך - דרך א':**
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/b6baddc3-b864-4809-b010-262d75817efc" width="45%" alt="Q2A Run" />
-  <img src="https://github.com/user-attachments/assets/077e71aa-e309-467e-b43c-e44202ff0894" width="45%" alt="Q2A Result" />
-</p>
-
-**צילומי מסך - דרך ב':**
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/e95c7ed0-5b3f-444a-aa52-0fdb9bd11cbc" width="45%" alt="Q2B Run" />
-  <img src="https://github.com/user-attachments/assets/077e71aa-e309-467e-b43c-e44202ff0894" width="45%" alt="Q2B Result" />
-</p>
-
-**השוואת יעילות:** דרך א' (JOIN) עוברת אופטימיזציה טובה יותר במנועי SQL. בשימוש ב-IN, במידה ותת-השאילתה מחזירה תוצאות רבות, המנוע עלול לבצע סריקה אטית של הטבלה החיצונית עבור כל ערך. ה-JOIN מיועד לקישור רלציוני כזה ופועל כיחידה אחת יעילה.
-
-<hr />
-
-### שאילתה 3: מתאמנים פעילים החודש
-**תיאור השאילתה:** מציאת מתאמנים שביצעו לפחות אימון אחד בחודש פברואר 2024 (פירוק תאריכים).
-
-```sql
--- דרך א': שימוש ב-JOIN ו-DISTINCT
-SELECT DISTINCT T.Trainee_ID, T.Gender, T.Join_Date 
-FROM TRAINEE_PROFILE T JOIN WORKOUT_LOG W ON T.Trainee_ID = W.Trainee_ID 
-WHERE EXTRACT(MONTH FROM W.Log_Date) = 2 AND EXTRACT(YEAR FROM W.Log_Date) = 2024;
-
--- דרך ב': שימוש ב-EXISTS
-SELECT Trainee_ID, Gender, Join_Date 
-FROM TRAINEE_PROFILE T WHERE EXISTS (
-    SELECT 1 FROM WORKOUT_LOG W WHERE W.Trainee_ID = T.Trainee_ID 
-    AND EXTRACT(MONTH FROM W.Log_Date) = 2 AND EXTRACT(YEAR FROM W.Log_Date) = 2024);
-```
-
-**צילומי מסך - דרך א':**
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/4f83a592-ecf4-46d2-891b-ebe5c292738e" width="45%" alt="Q3A Run" />
-  <img src="https://github.com/user-attachments/assets/d3d5c16d-f1d5-4a02-9cae-148250335a6f" width="45%" alt="Q3A Result" />
-</p>
-
-**צילומי מסך - דרך ב':**
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/6fd46ba8-c3ae-4a6a-84ff-f8fd4a28fc81" width="45%" alt="Q3B Run" />
-  <img src="https://github.com/user-attachments/assets/e71594c5-7969-4b31-ad5e-5dfacaf83988" width="45%" alt="Q3B Result" />
-</p>
-
-**השוואת יעילות:** דרך ב' (EXISTS) יעילה משמעותית. בדרך א', ה-JOIN שולף את המתאמן כמספר הפעמים שהתאמן באותו חודש, ורק אז מפעיל DISTINCT כבד למחיקת כפילויות. פקודת EXISTS עוצרת את החיפוש (Short-circuit) עבור מתאמן ברגע שנמצא אימון אחד שמתאים לתנאי, מה שחוסך זמן עיבוד יקר (ניתן לשים לב שהתוצאות ש2 השאילתות נתנו שונות, אבל זה רק הסדר השתנה, התוצאה עצמה - נשארה אותו הדבר, וסימן לכך הוא שב2 התוצאות מוחזרות בדיוק 466 שורות).
-
-<hr />
-
-### שאילתה 4: השוואת משקל נוכחי ליעד (עבור היסטוריית מדידות)
-**תיאור השאילתה:** הצגת כל המדידות של מתאמן ספציפי לצד משקל היעד המוגדר שלו בטבלת היעדים.
-
-```sql
--- דרך א': שימוש ב-JOIN
-SELECT M.Measurement_Date, M.Weight_Kg, G.Target_Weight_Kg 
-FROM BODY_MEASUREMENT M JOIN TRAINEE_GOAL G ON M.Trainee_ID = G.Trainee_ID 
-WHERE M.Trainee_ID = 1;
-
--- דרך ב': תת-שאילתה מקוננת ב-SELECT
-SELECT M.Measurement_Date, M.Weight_Kg, 
-       (SELECT G.Target_Weight_Kg FROM TRAINEE_GOAL G WHERE G.Trainee_ID = M.Trainee_ID LIMIT 1) AS Target_Weight_Kg
-FROM BODY_MEASUREMENT M WHERE M.Trainee_ID = 1;
-```
-
-**צילומי מסך - דרך א':**
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/c05de781-f5fd-4da7-8be2-0f0fa9b1a3dc" width="45%" alt="Q4A Run" />
-  <img src="https://github.com/user-attachments/assets/b6d8786e-5046-40e7-bec2-e45c84bd269a" width="45%" alt="Q4A Result" />
-</p>
-
-**צילומי מסך - דרך ב':**
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/1ce0561d-22f7-4214-9b84-2def124b2598" width="45%" alt="Q4B Run" />
-  <img src="https://github.com/user-attachments/assets/b6d8786e-5046-40e7-bec2-e45c84bd269a" width="45%" alt="Q4B Result" />
-</p>
-
-**השוואת יעילות:** דרך א' (JOIN) היא היעילה והנכונה לארכיטקטורה זו. דרך ב' סובלת מ"בעיית ה-N+1": תת-השאילתה המקוננת ב-SELECT מורצת מחדש עבור כל שורה ושורה שחוזרת מטבלת המדידות. ה-JOIN מבצע את ההתאמה בפעולה אחת רציפה עבור כל קבוצת הנתונים.
-
-<hr />
-
-## חלק א'2: שאילתות שליפה (SELECT) מורכבות
-
-### שאילתה 5: סיכום שריפת קלוריות ודופק לפי חודשים
-**תיאור השאילתה:** הצגת סיכום חודשי למתאמן ספציפי הכולל את כמות האימונים, סך הקלוריות שנשרפו וממוצע הדופק בשנת 2024.
-
-```sql
-SELECT EXTRACT(MONTH FROM Log_Date) AS Workout_Month, COUNT(Log_ID) AS Total_Workouts, 
-       SUM(Total_Calories_Burned) AS Total_Calories, ROUND(AVG(Average_Heart_Rate), 1) AS Avg_Heart_Rate 
-FROM WORKOUT_LOG 
-WHERE Trainee_ID = 1 AND EXTRACT(YEAR FROM Log_Date) = 2024 
-GROUP BY EXTRACT(MONTH FROM Log_Date) ORDER BY Workout_Month;
-```
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/d2901a26-bd7c-48bb-93d1-8e26cf2652b4" width="45%" alt="Q5 Run" />
-  <img src="https://github.com/user-attachments/assets/3322af27-2bfb-46cd-a664-62cc10258f48" width="45%" alt="Q5 Result" />
-</p>
-
-### שאילתה 6: אפיון תוכניות אימון ארוכות לפי קבוצות שריר
-**תיאור השאילתה:** הצגת התוכניות במערכת שאורכן מעל 45 דקות, לצד קבוצת השריר המרכזית וכמות התרגילים בכל תוכנית (שילוב 4 טבלאות).
-
-```sql
-SELECT P.Program_Name, M.Group_Name, COUNT(I.Exercise_ID) AS Total_Exercises 
-FROM TRAINING_PROGRAM P 
-JOIN INCLUDES I ON P.Program_ID = I.Program_ID 
-JOIN EXERCISE E ON I.Exercise_ID = E.Exercise_ID 
-JOIN MUSCLE_GROUP M ON E.Muscle_Group_ID = M.Muscle_Group_ID 
-WHERE P.Estimated_Duration_Minutes > 45 
-GROUP BY P.Program_Name, M.Group_Name ORDER BY Total_Exercises DESC;
-```
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/2e579d10-dd50-4683-928f-c3b9f0f066b5" width="45%" alt="Q6 Run" />
-  <img src="https://github.com/user-attachments/assets/c239d516-4f51-4921-9a48-488659898a9e" width="45%" alt="Q6 Result" />
-</p>
-
-### שאילתה 7: מעקב תנודות משקל למתאמנים
-**תיאור השאילתה:** מציאת הפער בין המשקל המקסימלי למינימלי של כל מתאמן, והצגת מתאמנים עם פער של יותר מ-2 ק"ג בלבד.
-
-```sql
-SELECT T.Trainee_ID, T.Gender, MAX(M.Weight_Kg) AS Max_Weight, MIN(M.Weight_Kg) AS Min_Weight, 
-       (MAX(M.Weight_Kg) - MIN(M.Weight_Kg)) AS Weight_Fluctuation 
-FROM TRAINEE_PROFILE T JOIN BODY_MEASUREMENT M ON T.Trainee_ID = M.Trainee_ID 
-GROUP BY T.Trainee_ID, T.Gender HAVING (MAX(M.Weight_Kg) - MIN(M.Weight_Kg)) > 2 
-ORDER BY Weight_Fluctuation DESC;
-```
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/d6af260a-417f-47f7-ad0d-6eb0a242742a" width="45%" alt="Q7 Run" />
-  <img src="https://github.com/user-attachments/assets/c626602e-3046-43ed-b0ec-7f81e376fe1d" width="45%" alt="Q7 Result" />
-</p>
-
-### שאילתה 8: פופולריות של תוכניות אימון בפועל
-**תיאור השאילתה:** בדיקה אילו תוכניות אימון בוצעו הכי הרבה פעמים בפועל על ידי מתאמנים, כולל תוכניות שלא בוצעו מעולם (שימוש ב-LEFT JOIN).
-
-```sql
-SELECT P.Program_Name, P.Workout_Type, COUNT(W.Log_ID) AS Times_Performed, 
-       COALESCE(SUM(W.Duration_Minutes), 0) AS Total_Minutes_Spent 
-FROM TRAINING_PROGRAM P LEFT JOIN WORKOUT_LOG W ON P.Program_ID = W.Program_ID 
-GROUP BY P.Program_ID, P.Program_Name, P.Workout_Type ORDER BY Times_Performed DESC;
-```
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/3fe9ec0e-6f9f-4c8c-b3ab-5e3596de633e" width="45%" alt="Q8 Run" />
-  <img src="https://github.com/user-attachments/assets/c13f4d21-ad40-47e5-a322-08510fd2568e" width="45%" alt="Q8 Result" />
-</p>
-
-<hr />
-
-## חלק ב': שאילתות עדכון (UPDATE)
-
-### עדכון 1: סימון יעדים שהושגו
-**תיאור השאילתה:** מעדכן את סטטוס היעד (`Is_Achieved`) ל-true עבור מתאמנים שהמשקל הנוכחי שלהם (בטבלת המדידות) הגיע למשקל היעד שהוגדר או ירד ממנו.
-
-**קוד העדכון:**
-```sql
-UPDATE TRAINEE_GOAL
-SET Is_Achieved = true
-WHERE Trainee_ID IN (
-    SELECT G.Trainee_ID FROM TRAINEE_GOAL G
-    JOIN BODY_MEASUREMENT M ON G.Trainee_ID = M.Trainee_ID
-    WHERE M.Weight_Kg <= G.Target_Weight_Kg AND G.Is_Achieved = false
-);
-```
-
-**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
-```sql
-SELECT G.Trainee_ID, G.Target_Weight_Kg, M.Weight_Kg AS Current_Weight, G.Is_Achieved
-FROM TRAINEE_GOAL G
-JOIN BODY_MEASUREMENT M ON G.Trainee_ID = M.Trainee_ID
-WHERE M.Weight_Kg <= G.Target_Weight_Kg AND G.Is_Achieved = false;
-```
-
-**צילומי מסך:**
-<p align="center">
-  <b>לפני העדכון:</b><br/>
-  <img src="https://github.com/user-attachments/assets/76f28d51-06fa-4aa1-b081-0804662c0ddc" width="600" alt="Update 1 Before" />
-</p>
-<p align="center">
-  <b>הרצת השאילתה:</b><br/>
-  <img src="https://github.com/user-attachments/assets/640ca25d-e659-4aaf-a500-746bea0ee87c" width="600" alt="Update 1 Run" />
-</p>
-<p align="center">
-  <b>אחרי העדכון (טבלה ריקה):</b><br/>
-  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Update 1 After" />
-</p>
-
-<hr />
-
-### עדכון 2: סידור אזורי הלוקרים לפי מגדר
-**תיאור השאילתה:** מתקנת הקצאות לוקרים שגויות על ידי הבטחה שמתאמנים גברים מועברים לחדר ההלבשה לגברים ומתאמנות נשים מועברות לחדר ההלבשה לנשים.
-
-**קוד העדכון:**
-```sql
-UPDATE Locker
-SET Location_Zone = CASE 
-    WHEN Trainee_Profile.Gender = 'Male' THEN 'Men Locker Room'
-    WHEN Trainee_Profile.Gender = 'Female' THEN 'Women Locker Room'
-END
-FROM Trainee_Profile
-WHERE Locker.Trainee_ID = Trainee_Profile.Trainee_ID
-  AND (
-    (Trainee_Profile.Gender = 'Male' AND Locker.Location_Zone = 'Women Locker Room')
-    OR 
-    (Trainee_Profile.Gender = 'Female' AND Locker.Location_Zone = 'Men Locker Room')
-  );
-```
-
-**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
-```sql
-SELECT L.Locker_ID, L.Location_Zone AS Current_Zone, TP.Gender AS Trainee_Gender
-FROM Locker L
-JOIN Trainee_Profile TP ON L.Trainee_ID = TP.Trainee_ID
-WHERE (TP.Gender = 'Male' AND L.Location_Zone = 'Women Locker Room')
-   OR (TP.Gender = 'Female' AND L.Location_Zone = 'Men Locker Room');
-```
-
-**צילומי מסך:**
-<p align="center">
-  <b>לפני העדכון:</b><br/>
-  <img src="https://github.com/user-attachments/assets/6b3c2687-4bd5-4c98-885b-fc4ec2db8c1b" width="600" alt="Update 2 Before" />
-</p>
-<p align="center">
-  <b>הרצת השאילתה:</b><br/>
-  <img src="https://github.com/user-attachments/assets/57c1ac09-eb7f-4649-a363-78d3b7d97741" width="600" alt="Update 2 Run" />
-</p>
-<p align="center">
-  <b>אחרי העדכון (טבלה ריקה):</b><br/>
-  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Update 2 After" />
-</p>
-
-<hr />
-
-### עדכון 3: העלאת רמת קושי לתוכניות ארוכות
-**תיאור השאילתה:** משנה את רמת הקושי ל-5 עבור תוכניות אימון שמשך הביצוע הממוצע שלהן בפועל (לפי היומנים) גדול מ-70 דקות.
-
-**קוד העדכון:**
-```sql
-UPDATE TRAINING_PROGRAM
-SET Difficulty_Level = 5
-WHERE Program_ID IN (
-    SELECT Program_ID FROM WORKOUT_LOG GROUP BY Program_ID HAVING AVG(Duration_Minutes) > 70
-) AND Difficulty_Level < 5;
-```
-
-**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
-```sql
-SELECT Program_ID, Program_Name, Difficulty_Level
-FROM TRAINING_PROGRAM
-WHERE Program_ID IN (
-    SELECT Program_ID FROM WORKOUT_LOG GROUP BY Program_ID HAVING AVG(Duration_Minutes) > 70
-) AND Difficulty_Level < 5;
-```
-
-**צילומי מסך:**
-<p align="center">
-  <b>לפני העדכון:</b><br/>
-  <img src="https://github.com/user-attachments/assets/06b3f6e0-d39b-4a5c-9208-a6988e6cf96c" width="600" alt="Update 3 Before" />
-</p>
-<p align="center">
-  <b>הרצת השאילתה:</b><br/>
-  <img src="https://github.com/user-attachments/assets/eae9dd5f-d6ed-4bca-b4bf-a2c51689a345" width="600" alt="Update 3 Run" />
-</p>
-<p align="center">
-  <b>אחרי העדכון (טבלה ריקה):</b><br/>
-  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Update 3 After" />
-</p>
-
-<hr />
-
-## חלק ג': שאילתות מחיקה (DELETE)
-
-### מחיקה 1: מחיקת יומני אימונים היסטוריים
-**תיאור השאילתה:** מוחק מטבלת יומני האימון את כל הרשומות של האימונים שבוצעו במהלך חודש ינואר בשנת 2024.
-
-**קוד המחיקה:**
-```sql
-DELETE FROM WORKOUT_LOG
-WHERE EXTRACT(MONTH FROM Log_Date) = 1 
-  AND EXTRACT(YEAR FROM Log_Date) = 2024;
-```
-
-**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
-```sql
-SELECT Log_ID, Trainee_ID, Log_Date, Total_Calories_Burned
-FROM WORKOUT_LOG
-WHERE EXTRACT(MONTH FROM Log_Date) = 1 AND EXTRACT(YEAR FROM Log_Date) = 2024;
-```
-
-**צילומי מסך:**
-<p align="center">
-  <b>לפני המחיקה:</b><br/>
-  <img src="https://github.com/user-attachments/assets/6aca4240-60b5-4f78-8d7b-5f6adbf882fb" width="600" alt="Delete 1 Before" />
-</p>
-<p align="center">
-  <b>הרצת השאילתה:</b><br/>
-  <img src="https://github.com/user-attachments/assets/3b0659be-7459-4328-8441-59fc48b53923" width="600" alt="Delete 1 Run" />
-</p>
-<p align="center">
-  <b>אחרי המחיקה (טבלה ריקה):</b><br/>
-  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 1 After" />
-</p>
-
-<hr />
-
-### מחיקה 2: הסרת מדידות משקל גבוהות עבור מתאמנים גברים
-**תיאור השאילתה:** מוחק את כל רשומות המדידה בהן המשקל שנרשם גדול מ-119 קילוגרמים, אך ורק עבור מתאמנים המוגדרים כגברים.
-
-**קוד המחיקה:**
-```sql
-DELETE FROM BODY_MEASUREMENT
-WHERE Weight_Kg > 119
-  AND Trainee_ID IN (
-      SELECT Trainee_ID FROM TRAINEE_PROFILE WHERE Gender = 'Male'
-  );
-```
-
-**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
-```sql
-SELECT M.Measurement_ID, M.Trainee_ID, M.Weight_Kg, T.Gender
-FROM BODY_MEASUREMENT M
-JOIN TRAINEE_PROFILE T ON M.Trainee_ID = T.Trainee_ID
-WHERE M.Weight_Kg > 119 AND T.Gender = 'Male';
-```
-
-**צילומי מסך:**
-<p align="center">
-  <b>לפני המחיקה:</b><br/>
-  <img src="https://github.com/user-attachments/assets/96d61a7d-e9e4-4aef-a175-d25c23b793c0" width="600" alt="Delete 2 Before" />
-</p>
-<p align="center">
-  <b>הרצת השאילתה:</b><br/>
-  <img src="https://github.com/user-attachments/assets/e823d563-7e2b-482c-954b-14072a605546" width="600" alt="Delete 2 Run" />
-</p>
-<p align="center">
-  <b>אחרי המחיקה (טבלה ריקה):</b><br/>
-  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 2 After" />
-</p>
-
-<hr />
-
-### מחיקה 3: ניקוי היסטוריית מדידות למתאמנים שהשיגו יעד
-**תיאור השאילתה:** מוחק את כל מדידות הגוף הישנות של מתאמנים שהוגדר להם במערכת כי הם כבר השיגו את יעד המשקל שלהם (`Is_Achieved = true`).
-
-**קוד המחיקה:**
-```sql
-DELETE FROM BODY_MEASUREMENT
-WHERE Trainee_ID IN (
-    SELECT Trainee_ID FROM TRAINEE_GOAL WHERE Is_Achieved = true
-);
-```
-
-**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
-```sql
-SELECT M.Measurement_ID, M.Trainee_ID, M.Measurement_Date, G.Is_Achieved
-FROM BODY_MEASUREMENT M
-JOIN TRAINEE_GOAL G ON M.Trainee_ID = G.Trainee_ID
-WHERE G.Is_Achieved = true;
-```
-
-**צילומי מסך:**
-<p align="center">
-  <b>לפני המחיקה:</b><br/>
-  <img src="https://github.com/user-attachments/assets/0f8da495-eef3-4ca7-9c7d-189ea87395a7" width="600" alt="Delete 3 Before" />
-</p>
-<p align="center">
-  <b>הרצת השאילתה:</b><br/>
-  <img src="https://github.com/user-attachments/assets/b1c90859-b052-4d77-afac-ea0d7df5c19a" width="600" alt="Delete 3 Run" />
-</p>
-<p align="center">
-  <b>אחרי המחיקה (טבלה ריקה):</b><br/>
-  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 3 After" />
-</p>
-
-## חלק ד': אילוצים (ALTER TABLE)
 ### שינוי מבני מקדים: הוספת עמודת שם
-לפני הוספת האילוצים, עדכנו את סכמת בסיס הנתונים והוספנו עמודה חדשה עבור שם המתאמן לטבלת הפרופילים.
-**קוד ה-ALTER TABLE:**
-```sql
-ALTER TABLE Trainee_Profile 
-ADD COLUMN Name VARCHAR(100);
-```
+לפני הוספת האילוצים, עדכנו את סכמת בסיס הנתונים והוספנו עמודה חדשה עבור שם המתאמן לטבלת הפרופילים, והכנסנו ערכים בעזרת שאילתה המגרילה שמות לגברים ונשים מתוך 50 שמות פרטיים ו- 50 שמות משפחה לכל אחד:
 
----
+```sql
+ALTER TABLE Trainee_Profile
+ADD COLUMN Name VARCHAR(50);
+
+UPDATE Trainee_Profile
+SET name = CASE 
+    WHEN gender = 'Male' THEN 
+        (ARRAY['David', 'Daniel', 'Omer', 'Amit', 'Itay', 'Yonatan', 'Tom', 'Guy', 'Roy', 'Ido', 'Tomer', 'Ben', 'Adam', 'Michael', 'Eran', 'Gil', 'Lior', 'Nir', 'Roee', 'Ariel', 'Noam', 'Uri', 'Yosef', 'Eitan', 'Itamar', 'Yair', 'Asaf', 'Nadav', 'Matan', 'Shahar', 'Eyal', 'Ohad', 'Barak', 'Gal', 'Peleg', 'Dvir', 'Elad', 'Yaron', 'Aviv', 'Ziv', 'Gabi', 'Yoav', 'Yishai', 'Eli', 'Avi', 'Yigal', 'Dor', 'Maor', 'Or', 'Erez'])[floor(random() * 50 + 1)::int]
+        || ' ' ||
+        (ARRAY['Cohen', 'Levi', 'Mizrahi', 'Peretz', 'Bitton', 'Dahan', 'Agmon', 'Friedman', 'Malka', 'Azoulay', 'Katz', 'Yosef', 'David', 'Amar', 'Ohayon', 'Hadad', 'Gabbay', 'Ben-David', 'Adler', 'Levin', 'Tal', 'Golan', 'Kadosh', 'Shapira', 'Klein', 'Avraham', 'Yaari', 'Bar', 'Chen', 'Eilon', 'Peled', 'Tzur', 'Segel', 'Naveh', 'Almog', 'Harari', 'Vardi', 'Lavi', 'Manor', 'Dror', 'Ratzon', 'Paz', 'Sadeh', 'Geva', 'Mor', 'Shahaf', 'Gefen', 'Dekel', 'Carmeli', 'Alon'])[floor(random() * 50 + 1)::int]
+        
+    WHEN gender = 'Female' THEN 
+        (ARRAY['Maya', 'Noa', 'Shir', 'Yael', 'Michal', 'Tamar', 'Roni', 'Shira', 'Eden', 'Adi', 'Gal', 'Dana', 'Mor', 'Anna', 'Sarah', 'Nofar', 'Talia', 'Romi', 'Lian', 'Keren', 'Hila', 'Yarden', 'Noya', 'Mika', 'Agam', 'Ella', 'Lihi', 'Maayan', 'Sapir', 'Liron', 'Rotem', 'Inbar', 'Hadar', 'Nitzan', 'Yuval', 'Gefen', 'Tair', 'Avia', 'Gali', 'Carmel', 'Shelly', 'Yifat', 'Lital', 'Einat', 'Efrat', 'Meirav', 'Sigal', 'Orit', 'Ronit', 'Anat'])[floor(random() * 50 + 1)::int]
+        || ' ' ||
+        (ARRAY['Cohen', 'Levi', 'Mizrahi', 'Peretz', 'Bitton', 'Dahan', 'Agmon', 'Friedman', 'Malka', 'Azoulay', 'Katz', 'Yosef', 'David', 'Amar', 'Ohayon', 'Hadad', 'Gabbay', 'Ben-David', 'Adler', 'Levin', 'Tal', 'Golan', 'Kadosh', 'Shapira', 'Klein', 'Avraham', 'Yaari', 'Bar', 'Chen', 'Eilon', 'Peled', 'Tzur', 'Segel', 'Naveh', 'Almog', 'Harari', 'Vardi', 'Lavi', 'Manor', 'Dror', 'Ratzon', 'Paz', 'Sadeh', 'Geva', 'Mor', 'Shahaf', 'Gefen', 'Dekel', 'Carmeli', 'Alon'])[floor(random() * 50 + 1)::int]
+END;
+```
 
 ### אילוץ 1: תקינות השכרת לוקר (`chk_locker_rental`)
 **תיאור השינוי:** הוספנו אילוץ לטבלת `Locker` המוודא שלמות נתונים בעת השכרת לוקר. האילוץ קובע כי לא ניתן להזין תאריך סיום השכרה ללא שיוך למתאמן (Trainee_ID), ולא ניתן לשייך לוקר למתאמן ללא תאריך סיום השכרה.
 
-**קוד ה-ALTER TABLE:**
 ```sql
 ALTER TABLE Locker
 ADD CONSTRAINT chk_locker_rental 
@@ -593,111 +186,297 @@ CHECK (
 );
 ```
 
-**הכנסת נתונים סותרים (בדיקת האילוץ):**
-הורצו שתי בדיקות שמפרות את האילוץ בכוונה:
-1. ניסיון להזין תאריך ללא מספר מתאמן:
-```sql
-INSERT INTO Locker (Locker_ID, Location_Zone, Rental_End_Date, Trainee_ID)
-VALUES (501, 'VIP Zone', '2026-06-06', NULL);
-```
-2. ניסיון להזין מספר מתאמן ללא תאריך:
-```sql
-INSERT INTO Locker (Locker_ID, Location_Zone, Rental_End_Date, Trainee_ID)
-VALUES (501, 'VIP Zone', NULL, 1);
-```
-
-**צילומי שגיאת הרצה:**
+**צילומי שגיאת הרצה (בדיקת האילוץ):**
 <p align="center">
   <b>הפרה 1 - תאריך ללא מתאמן:</b><br/>
-  <img src="https://github.com/user-attachments/assets/6fa146cb-c946-49ef-ade6-5963cb50cf7f" width="700" alt="Locker Constraint Error 1" />
+  <b><img width="1521" height="455" alt="Screenshot 2026-03-22 204244" src="https://github.com/user-attachments/assets/ac537927-78fc-4eca-acc0-2fe013bee04d" /></b>
 </p>
 <p align="center">
   <b>הפרה 2 - מתאמן ללא תאריך:</b><br/>
-  <img src="https://github.com/user-attachments/assets/b843cfdd-112c-4ae0-8f0c-cfb6ad2f9310" width="700" alt="Locker Constraint Error 2" />
+  <b><img width="1520" height="461" alt="Screenshot 2026-03-22 204316" src="https://github.com/user-attachments/assets/17cfa2ae-1438-43a2-bb3f-4c13ef2b4a22" /></b>
 </p>
-
----
 
 ### אילוץ 2: גיל מינימלי להצטרפות (`chk_trainee_age`)
 **תיאור השינוי:** הוספנו אילוץ לטבלת `Trainee_Profile` המוודא כי מתאמן יכול להירשם למכון הכושר רק אם מלאו לו לפחות 14 שנים ביום ההצטרפות.
 
-**קוד ה-ALTER TABLE:**
 ```sql
 ALTER TABLE Trainee_Profile
 ADD CONSTRAINT chk_trainee_age 
-CHECK (EXTRACT(YEAR FROM AGE(Join_Date, Date_Of_Birth)) >= 14);
+CHECK (Join_Date >= Date_Of_Birth + INTERVAL '14 years');
 ```
 
-**הכנסת נתונים סותרים (בדיקת האילוץ):**
-ניסיון להזין מתאמן בן 10 (תאריך לידה ב-2015 ותאריך הצטרפות ב-2025):
-```sql
-INSERT INTO Trainee_Profile (Trainee_ID, Date_Of_Birth, Join_Date, Gender, Main_Goal, Menu_ID, Name)
-VALUES (501, '2015-01-01', '2025-01-01', 'Male', 'Flexing & Aura', NULL, 'Yair Ziv');
-```
-
-**צילום שגיאת הרצה:**
+**צילום שגיאת הרצה (בדיקת האילוץ):**
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/5f2644ab-f66f-4542-981b-c22bcb48f893" width="700" alt="Age Constraint Error" />
+  <b><img width="1520" height="457" alt="Screenshot 2026-03-22 204353" src="https://github.com/user-attachments/assets/ce3ee633-37f6-4856-a517-ca4c8f43ede7" /></b>
+</p>
+
+<hr />
+
+## חלק ב': טיוב נתונים ולוגיקה עסקית (UPDATE)
+
+בשלב זה ביצענו 6 שאילתות עדכון (Data Cleansing) כדי להפוך את הנתונים האקראיים (Mock Data) להגיוניים עסקית ותואמים למציאות.
+
+### עדכון 1: סידור תאריכי יומני אימון
+**תיאור השאילתה:** יישור קו לתאריכי האימונים במערכת. הבטחנו שאף תאריך אימון לא יקדם ליום פתיחת המכון (01.01.2024) או ליום ההצטרפות של המתאמן למכון.
+
+<p align="center">
+  <b>1. המאגר לפני העדכון:</b><br/>
+  <b><img width="1442" height="624" alt="Screenshot 2026-03-23 155151" src="https://github.com/user-attachments/assets/bcc7e5a5-b847-46b6-abe1-147b82e2234f" /></b><br/><br/>
+  <b>2. הרצת השאילתה (כולל הקוד וההשפעה):</b><br/>
+  <b><img width="1515" height="328" alt="Screenshot 2026-03-23 155232" src="https://github.com/user-attachments/assets/365491e2-3ce0-45bd-954a-5d7107c460a4" /></b><br/><br/>
+  <b>3. המאגר אחרי העדכון:</b><br/>
+  <b><img width="1439" height="619" alt="Screenshot 2026-03-23 155258" src="https://github.com/user-attachments/assets/1fc8a87c-db62-472c-afe4-e9239f55aa5f" /></b>
+</p>
+
+<hr />
+
+### עדכון 2: סידור תאריכי מדידות גוף
+**תיאור השאילתה:** בדומה לאימונים, יישור קו לתאריכי המדידות בטבלת `BODY_MEASUREMENT` כך שלא יהיו מדידות לפני הצטרפות המתאמן או פתיחת המכון.
+
+<p align="center">
+  <b>1. המאגר לפני העדכון:</b><br/>
+  <b><img width="1417" height="622" alt="Screenshot 2026-03-23 155407" src="https://github.com/user-attachments/assets/3b44c13a-c40c-4ca0-a595-3ceeb17e3069" /></b><br/><br/>
+  <b>2. הרצת השאילתה (כולל הקוד וההשפעה):</b><br/>
+  <b><img width="1513" height="313" alt="Screenshot 2026-03-23 155434" src="https://github.com/user-attachments/assets/8c5975ca-37ae-4923-989e-699c14d150d1" /></b><br/><br/>
+  <b>3. המאגר אחרי העדכון:</b><br/>
+  <b><img width="1419" height="622" alt="Screenshot 2026-03-23 155522" src="https://github.com/user-attachments/assets/7482ad9b-acb2-4d46-bdde-7ef46f7d75e0" /></b>
+</p>
+
+<hr />
+
+### עדכון 3: סידור תאריכי יצירת יעדים
+**תיאור השאילתה:** עדכון תאריכי יצירת היעד (`Creation_Date`) בטבלת `TRAINEE_GOAL` כך שיהיו הגיוניים כרונולוגית ביחס למועד רישום המתאמן.
+
+<p align="center">
+  <b>1. המאגר לפני העדכון:</b><br/>
+  <b><img width="1438" height="623" alt="Screenshot 2026-03-23 155708" src="https://github.com/user-attachments/assets/0f3531cf-a801-438e-9bab-415240b9db4d" /></b><br/><br/>
+  <b>2. הרצת השאילתה (כולל הקוד וההשפעה):</b><br/>
+  <b><img width="1516" height="320" alt="Screenshot 2026-03-23 155840" src="https://github.com/user-attachments/assets/5f767e71-e274-48b2-80e6-62e0c2b5b020" /></b><br/><br/>
+  <b>3. המאגר אחרי העדכון:</b><br/>
+  <b><img width="1438" height="623" alt="Screenshot 2026-03-23 155914" src="https://github.com/user-attachments/assets/ebcb0de9-9dbe-4b09-a440-037134fb9cc7" /></b>
+</p>
+
+<hr />
+
+### עדכון 4: חישוב תאריכי יעד סופיים
+**תיאור השאילתה:** חישוב דינמי של תאריכי היעד (`Target_Date`) ביחס ישיר לתאריך יצירת המטרה (טווח אקראי של 30 עד 365 ימים קדימה).
+
+<p align="center">
+  <b>1. המאגר לפני העדכון:</b><br/>
+  <b><img width="1438" height="623" alt="Screenshot 2026-03-23 155914" src="https://github.com/user-attachments/assets/ebcb0de9-9dbe-4b09-a440-037134fb9cc7" /></b><br/><br/>
+  <b>2. הרצת השאילתה (כולל הקוד וההשפעה):</b><br/>
+  <b><img width="1515" height="225" alt="Screenshot 2026-03-23 160040" src="https://github.com/user-attachments/assets/0fc0c4b8-5758-4408-9c4f-acbbf693c528" /></b><br/><br/>
+  <b>3. המאגר אחרי העדכון:</b><br/>
+  <b><img width="1439" height="622" alt="Screenshot 2026-03-23 160124" src="https://github.com/user-attachments/assets/2202df2d-6482-40ea-bdb2-48b928ca3ef0" /></b>
+</p>
+
+<hr />
+
+### עדכון 5: הקצאת לוקרים לפי מגדר
+**תיאור השאילתה:** מתקן הקצאות לוקרים שגויות על ידי הבטחה שמתאמנים גברים מועברים לחדר ההלבשה לגברים, ומתאמנות נשים מועברות לחדר ההלבשה לנשים, תוך הצלבה עם טבלת הפרופילים.
+
+<p align="center">
+  <b>1. המאגר לפני העדכון:</b><br/>
+  <b><img width="846" height="624" alt="Screenshot 2026-03-23 160447" src="https://github.com/user-attachments/assets/9cc24c35-51f8-475f-acf5-e3fd816a03d8" /></b><br/><br/>
+  <b>2. הרצת השאילתה (כולל הקוד וההשפעה):</b><br/>
+  <b><img width="1518" height="462" alt="Screenshot 2026-03-23 160510" src="https://github.com/user-attachments/assets/271370c4-ac15-48df-84a2-e8c4556006a9" /></b><br/><br/>
+  <b>3. המאגר אחרי העדכון:</b><br/>
+  <b><img width="847" height="625" alt="Screenshot 2026-03-23 160555" src="https://github.com/user-attachments/assets/ba142c32-7099-4546-a9ef-200f83a302a4" /></b>
+</p>
+
+<hr />
+
+### עדכון 6: חישוב דינמי לעמידה ביעדים
+**תיאור השאילתה:** שאילתה מורכבת המשתמשת בתת-שאילתה מתואמת ו-`COALESCE` לבדיקה האם המדידה האחרונה של המתאמן, שבוצעה *לפני* או ביום תאריך היעד שלו, עומדת ביעדי המשקל ואחוז השומן שהציב לעצמו.
+
+<p align="center">
+  <b>1. המאגר לפני העדכון:</b><br/>
+  <b><img width="1440" height="622" alt="Screenshot 2026-03-23 160739" src="https://github.com/user-attachments/assets/a82bd287-fd96-46a3-900e-3fd632b3591c" /></b><br/><br/>
+  <b>2. הרצת השאילתה (כולל הקוד וההשפעה):</b><br/>
+  <b><img width="1516" height="562" alt="Screenshot 2026-03-23 163731" src="https://github.com/user-attachments/assets/32d61acc-29b1-489a-a5b8-30324fe9f9d7" /></b><br/><br/>
+  <b>3. המאגר אחרי העדכון:</b><br/>
+  <b><img width="1439" height="620" alt="Screenshot 2026-03-23 163801" src="https://github.com/user-attachments/assets/c5a4ffa0-76a4-4e51-893b-918d9656be81" /></b>
+</p>
+
+<hr />
+
+## חלק ג': ניקוי נתונים (DELETE)
+
+### מחיקה 1: מחיקת אימוני דמו ביום שיפוצים
+**תיאור השאילתה:** מחיקת אימונים שהוזנו בטעות ביום בו המכון היה סגור לשיפוצים (15.08.2024), אך ורק למתאמנים שהצטרפו באותה שנה. השאילתה מפרקת תאריך ליום, חודש ושנה בנפרד.
+
+<p align="center">
+  <b>1. המאגר לפני המחיקה (הנתונים קיימים):</b><br/>
+  <b><img width="1465" height="461" alt="Screenshot 2026-03-23 164109" src="https://github.com/user-attachments/assets/42cd98be-9fdc-44ad-a2ac-6688d50e7e8d" /></b><br/><br/>
+  <b>2. הרצת השאילתה (כולל הקוד וההשפעה):</b><br/>
+  <b><img width="1515" height="391" alt="Screenshot 2026-03-23 164143" src="https://github.com/user-attachments/assets/b95e61d4-32fc-47c0-ad1d-f8aef38b711e" /></b><br/><br/>
+  <b>3. המאגר אחרי המחיקה (הנתונים הוסרו):</b><br/>
+  <b><img width="1460" height="507" alt="Screenshot 2026-03-23 164207" src="https://github.com/user-attachments/assets/d7fb7d7a-b198-4f9e-b1ef-df98bb65976f" /></b>
+</p>
+
+<hr />
+
+### מחיקה 2: הסרת מדידות חריגות (Outliers)
+**תיאור השאילתה:** הסרת מדידות גוף שגויות מעל 115 ק"ג עבור מתאמנות נשים בלבד, לצורך ניקוי רעשים סטטיסטיים והבטחת איכות הנתונים.
+
+<p align="center">
+  <b>1. המאגר לפני המחיקה (הנתונים קיימים):</b><br/>
+  <b><img width="1513" height="775" alt="Screenshot 2026-03-23 164546" src="https://github.com/user-attachments/assets/c9e9c9de-606c-4f5b-8caa-584ac2d6b692" /></b><br/><br/>
+  <b>2. הרצת השאילתה (כולל הקוד וההשפעה):</b><br/>
+  <b><img width="1516" height="339" alt="Screenshot 2026-03-23 164631" src="https://github.com/user-attachments/assets/f94e2543-7ab4-4954-b8d7-0036ba37d9c0" /></b><br/><br/>
+  <b>3. המאגר אחרי המחיקה (הנתונים הוסרו):</b><br/>
+  <b><img width="1514" height="784" alt="Screenshot 2026-03-23 164655" src="https://github.com/user-attachments/assets/6cdbdc80-c5b6-44cd-9eac-f80ccac1dae8" /></b>
+</p>
+
+<hr />
+
+### מחיקה 3: ניקוי יעדים למשתמשים לא פעילים
+**תיאור השאילתה:** ניהול אחסון חכם - מחיקת יעדים אישיים (מטבלת `TRAINEE_GOAL`) עבור מתאמנים המוגדרים כלא פעילים, כלומר, לא תיעדו אף אימון מתחילת שנת 2026.
+
+<p align="center">
+  <b>1. המאגר לפני המחיקה (ישנן 500 רשומות בטבלת היעדים):</b><br/>
+  <b><img width="97" height="28" alt="Screenshot 2026-03-23 165257" src="https://github.com/user-attachments/assets/ef3c93f9-f7d8-4175-b3a6-9489288be584" /></b><br/><br/>
+  <b>2. הרצת השאילתה (כולל הקוד וההשפעה):</b><br/>
+  <b><img width="1518" height="330" alt="Screenshot 2026-03-23 165340" src="https://github.com/user-attachments/assets/753c8ef2-7684-43ce-89d7-020b61223230" /></b><br/><br/>
+  <b>3. המאגר אחרי המחיקה (נותרו רק 497 רשומות):</b><br/>
+  <b><img width="92" height="30" alt="Screenshot 2026-03-23 165359" src="https://github.com/user-attachments/assets/d418ece4-7034-4a2e-bac9-85918e80c501" /></b>
+</p>
+
+<hr />
+
+## חלק ד' 1: שאילתות שליפה (SELECT) כפולות - השוואת יעילות
+
+בפרק זה יצרנו 4 שאילתות בשתי תצורות שונות (Method A ו-Method B) במטרה להשוות ולנתח את היעילות שלהן.
+
+### שאילתה 1: חילוץ מדידת המשקל הנמוכה ביותר 
+**תיאור השאילתה:** מציאת המדידה הטובה ביותר של מתאמן ספציפי (לפי ה-ID שלו).
+
+* **דרך א' (תת-שאילתה עם MIN):** פחות יעילה. מסד הנתונים מבצע שתי סריקות נפרדות - אחת למציאת משקל המינימום ואחת לשליפת הרשומה עצמה.
+* **דרך ב' (מיון ORDER BY ו-LIMIT) - המנצחת:** יעילה משמעותית. מסד הנתונים ממיין את התוצאות ושולף מיד את השורה הראשונה, מה שחוסך את הסריקה הכפולה.
+
+<p align="center">
+  <b>הרצה ותוצאה - דרך א':</b><br/>
+  <b><img width="1522" height="441" alt="Screenshot 2026-03-23 165537" src="https://github.com/user-attachments/assets/a8635086-6533-4636-ac0e-e16bd4738457" /></b><br/><br/>
+  <b>הרצה ותוצאה - דרך ב':</b><br/>
+  <b><img width="1520" height="301" alt="Screenshot 2026-03-23 165610" src="https://github.com/user-attachments/assets/3b658237-4fd4-4a7b-a2f1-ce532a731b0d" /></b>
+</p>
+
+<hr />
+
+### שאילתה 2: רשימת תרגילים בתוכנית 
+**תיאור השאילתה:** שליפת כל התרגילים, הסטים והחזרות עבור תוכנית אימון מסוימת.
+
+* **דרך א' (שימוש ב-JOIN) - המנצחת:** פועלת כפעולה אחת ממוטבת היטב.
+* **דרך ב' (שימוש ב-IN עם תת-שאילתות):** מציגה Anti-Pattern. עבור כל תרגיל המערכת מריצה 2 תת-שאילתות נפרדות, מה שיוצר עומס אדיר לעומת פעולת `JOIN` פשוטה.
+
+<p align="center">
+  <b>הרצה ותוצאה - דרך א':</b><br/>
+  <b><img width="1521" height="502" alt="Screenshot 2026-03-23 181517" src="https://github.com/user-attachments/assets/883b3c9e-4181-4e83-b33e-46717369b8c6" /></b><br/><br/>
+  <b>הרצה ותוצאה - דרך ב':</b><br/>
+  <b><img width="1521" height="599" alt="Screenshot 2026-03-23 181652" src="https://github.com/user-attachments/assets/03df1180-35f2-4572-8991-a499844b51be" /></b>
+</p>
+
+<hr />
+
+### שאילתה 3: מתאמנים פעילים בחודש ספציפי
+**תיאור השאילתה:** איתור מתאמנים שביצעו לפחות אימון אחד בפברואר 2025.
+
+* **דרך א' (שימוש ב-JOIN ו-DISTINCT):** פחות יעילה. יוצרת טבלה זמנית ענקית עם כפילויות לפני הסינון.
+* **דרך ב' (שימוש ב-EXISTS) - המנצחת:** מתוכננת לעצירה מוקדמת (Short-circuit). ברגע שנמצא אימון אחד, המנוע עובר מיד למתאמן הבא וחוסך זמן עיבוד יקר.
+
+<p align="center">
+  <b>הרצה ותוצאה - דרך א':</b><br/>
+  <b><img width="1522" height="462" alt="Screenshot 2026-03-23 181739" src="https://github.com/user-attachments/assets/a92c90c3-6f7d-42e6-95b6-087722224c6b" /></b><br/><br/>
+  <b>הרצה ותוצאה - דרך ב':</b><br/>
+  <b><img width="1518" height="575" alt="Screenshot 2026-03-23 182142" src="https://github.com/user-attachments/assets/6f38670b-e750-4795-bd2e-3ee732ac50bc" /></b>
+</p>
+
+
+<hr />
+
+### שאילתה 4: כמות לוקרים למתאמני VIP
+**תיאור השאילתה:** סופרת כמה לוקרים בסך הכל מוחזקים על ידי מתאמנים שיש להם לפחות לוקר VIP אחד.
+
+* **דרך א' (JOIN, GROUP BY, ותת-שאילתת IN) - המנצחת:** מייצרת רשימה מסוננת אחת מראש ומבצעת חיבור ממוטב.
+* **דרך ב' (תת-שאילתות מתואמות):** מדגימה את בעיית ה-"N+1" – עבור כל מתאמן בטבלה, מורצות תת-שאילתות נפרדות שוב ושוב לבדיקת הרשאת ה-VIP ולספירת הלוקרים.
+
+<p align="center">
+  <b>הרצה ותוצאה - דרך א':</b><br/>
+  <b><img width="1520" height="700" alt="Screenshot 2026-03-23 183023" src="https://github.com/user-attachments/assets/60f05c16-9140-4bdc-bd9a-8c80d6ce93b4" /></b><br/><br/>
+  <b>הרצה ותוצאה - דרך ב':</b><br/>
+  <b><img width="1517" height="686" alt="Screenshot 2026-03-23 183101" src="https://github.com/user-attachments/assets/2c5b756c-8130-429b-88ba-a1b65bfd59d4" /></b>
+</p>
+
+<hr />
+
+## חלק ד' 2: שאילתות שליפה (SELECT) מורכבות
+
+### שאילתה 5: סיכום שריפת קלוריות ודופק לפי חודשים
+**תיאור השאילתה:** אנליזה חודשית המציגה כמות אימונים, סך קלוריות וממוצע דופק בשנת 2026 בעזרת קיבוץ (`GROUP BY`) ופונקציות צבירה.
+
+<p align="center">
+  <b>השאילתה והתוצאה:</b><br/>
+  <b><img width="1521" height="526" alt="Screenshot 2026-03-23 183650" src="https://github.com/user-attachments/assets/5de3e63f-b294-4442-88b1-1515a94a0e1b" /></b>
+</p>
+
+<hr />
+
+### שאילתה 6: חשיפה לתביעות (ניהול סיכונים משפטי)
+**תיאור השאילתה:** איתור מתאמנים עם לוקר פעיל אך עם הצהרת בריאות שפגת תוקף. עושה שימוש ב-JOIN משולש וחיסור תאריכים להצגת "ימים בסיכון".
+
+<p align="center">
+  <b>השאילתה והתוצאה:</b><br/>
+  <b><img width="1513" height="693" alt="Screenshot 2026-03-23 185223" src="https://github.com/user-attachments/assets/1422ce8d-de7d-4d24-8610-3472224c0f1b" /></b>
+</p>
+
+<hr />
+
+### שאילתה 7: ציר זמן - התקדמות מדידות גוף
+**תיאור השאילתה:** שליפת ההיסטוריה המלאה של המתאמן, ממוינת מהעדכני ביותר לישן ביותר, לצורך בניית גרף התקדמות.
+
+<p align="center">
+  <b>השאילתה והתוצאה:</b><br/>
+  <b><img width="1519" height="620" alt="Screenshot 2026-03-23 185306" src="https://github.com/user-attachments/assets/62e8480c-8fef-4fc8-9b9d-cc69a04370d1" /></b>
+</p>
+
+<hr />
+
+### שאילתה 8: פופולריות של תוכניות אימון בפועל
+**תיאור השאילתה:** דירוג תוכניות אימון לפי כמות הביצועים וסך הדקות. שימוש ב-`LEFT JOIN` להצגת תוכניות שלא בוצעו מעולם, ו-`COALESCE` להמרת ערכי עמודות ריקות ל-0.
+
+<p align="center">
+  <b>השאילתה והתוצאה:</b><br/>
+  <b><img width="1521" height="602" alt="Screenshot 2026-03-23 185349" src="https://github.com/user-attachments/assets/f24cea2f-918d-470f-96db-7704e7875b56" /></b>
 </p>
 
 <hr />
 
 ## חלק ה': ניהול עסקאות (Transactions) - COMMIT / ROLLBACK
 
+במערכות מידע, קריטי לוודא שעדכונים מתבצעים בשלמותם כדי למנוע השחתת נתונים. השתמשנו בבלוקים של עסקאות כדי לבחון שינויים "על יבש".
+
 ### תסריט 1: ביטול תהליך בעזרת ROLLBACK
-**תיאור התסריט:** פתחנו בלוק פקודות (BEGIN) וביצענו עדכון לתאריך הלידה של מתאמן מספר 1. לאחר שווידאנו שהנתון אכן השתנה באופן זמני בזיכרון, הרצנו פקודת `ROLLBACK` כדי לבטל את התהליך. ניתן לראות כי הנתון חזר למצבו ההתחלתי.
+**תיאור:** עדכון תאריך לידה למתאמן בתוך טרנזקציה. לאחר שווידאנו שהנתון השתנה בזיכרון הזמני, הפעלנו פקודת `ROLLBACK` כדי לבטל את התהליך ולהחזיר את המסד למצבו התקין.
 
-**קוד התהליך:**
-```sql
-BEGIN;
-
-UPDATE Trainee_Profile 
-SET Date_Of_Birth = '2001-01-01' 
-WHERE Trainee_ID = 1;
-
-ROLLBACK;
-```
-
-**מצב מסד הנתונים בכל שלב:**
 <p align="center">
-  <b>1. לפני תחילת התהליך (תאריך מקורי: 2007-09-24):</b><br/>
-  <img src="https://github.com/user-attachments/assets/d6f8f87f-2d62-4deb-82fa-c8031a8dc49e" width="400" alt="Before Rollback" />
-</p>
-<p align="center">
-  <b>2. בתוך הבלוק, לפני הביטול (התאריך השתנה ל-2001-01-01):</b><br/>
-  <img src="https://github.com/user-attachments/assets/de770203-e48d-4e61-9d17-a75bbc22ff2f" width="400" alt="During Rollback" />
-</p>
-<p align="center">
-  <b>3. אחרי ה-ROLLBACK (הנתון חזר לתאריך המקורי):</b><br/>
-  <img src="https://github.com/user-attachments/assets/5af6658c-821f-4d4e-af32-841413a9da8f" width="400" alt="After Rollback" />
+  <b>1. לפני התהליך (הנתון המקורי):</b><br/>
+  <b><img width="375" height="321" alt="Screenshot 2026-03-22 160812" src="https://github.com/user-attachments/assets/f19d9569-b825-4c5d-93cd-5cd823c04c51" /></b><br/><br/>
+  <b>2. בתוך הבלוק, לפני הביטול (הנתון השתנה זמנית):</b><br/>
+  <b><img width="378" height="383" alt="Screenshot 2026-03-22 160912" src="https://github.com/user-attachments/assets/fd32ff8f-49de-49cc-b9a5-6eba6db447a3" /></b><br/><br/>
+  <b>3. אחרי ה-ROLLBACK (חזר למצב המקורי):</b><br/>
+  <b><img width="374" height="288" alt="Screenshot 2026-03-22 160950" src="https://github.com/user-attachments/assets/94c20e3b-204b-4283-b0ff-f1667c1f184b" /></b>
 </p>
 
 <hr />
 
 ### תסריט 2: שמירת תהליך בעזרת COMMIT
-**תיאור התסריט:** פתחנו בלוק פקודות וביצענו עדכון לתאריך ההצטרפות של מתאמן מספר 2. הפעם, הרצנו פקודת `COMMIT` בסיום. ניתן לראות כי השינוי נשמר במסד הנתונים באופן קבוע וסופי.
+**תיאור:** עדכון תאריך הצטרפות למתאמן בתוך טרנזקציה. הפעם, הרצנו פקודת `COMMIT` בסיום כדי לאשר סופית את השינוי ולצרוב אותו במסד הנתונים.
 
-**קוד התהליך:**
-```sql
-BEGIN;
-
-UPDATE Trainee_Profile 
-SET Join_Date = '2025-01-01' 
-WHERE Trainee_ID = 2;
-
-COMMIT;
-```
-
-**מצב מסד הנתונים בכל שלב:**
 <p align="center">
-  <b>1. לפני תחילת התהליך (תאריך מקורי: 2026-02-01):</b><br/>
-  <img src="https://github.com/user-attachments/assets/fb05de79-76a7-49e3-bf48-e098ed425639" width="400" alt="Before Commit" />
-</p>
-<p align="center">
-  <b>2. בתוך הבלוק, לאחר העדכון (התאריך השתנה ל-2025-01-01):</b><br/>
-  <img src="https://github.com/user-attachments/assets/e797df24-71d4-46f0-a7cf-a8950139802d" width="400" alt="During Commit" />
-</p>
-<p align="center">
-  <b>3. אחרי ה-COMMIT (הנתון נשמר ונשאר על 2025-01-01):</b><br/>
-  <img src="https://github.com/user-attachments/assets/121555b4-9c25-49e3-901d-ab96b99e7e33" width="400" alt="After Commit" />
+  <b>1. לפני התהליך (הנתון המקורי):</b><br/>
+  <b><img width="339" height="242" alt="Screenshot 2026-03-22 163458" src="https://github.com/user-attachments/assets/62c262cf-192c-46fe-b086-8e3baed31666" /></b><br/><br/>
+  <b>2. בתוך הבלוק, לאחר העדכון:</b><br/>
+  <b><img width="347" height="381" alt="Screenshot 2026-03-22 163656" src="https://github.com/user-attachments/assets/4d634b04-1971-404d-b687-ca967cb0af3f" /></b><br/><br/>
+  <b>3. אחרי ה-COMMIT (הנתון נשמר סופית):</b><br/>
+  <b><img width="345" height="295" alt="Screenshot 2026-03-22 163908" src="https://github.com/user-attachments/assets/56856dd2-25f4-423d-a1ba-65a2f322529a" /></b>
 </p>
