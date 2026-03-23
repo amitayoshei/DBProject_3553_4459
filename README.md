@@ -349,6 +349,7 @@ GROUP BY P.Program_ID, P.Program_Name, P.Workout_Type ORDER BY Times_Performed D
 ### עדכון 1: סימון יעדים שהושגו
 **תיאור השאילתה:** מעדכן את סטטוס היעד (`Is_Achieved`) ל-true עבור מתאמנים שהמשקל הנוכחי שלהם (בטבלת המדידות) הגיע למשקל היעד שהוגדר או ירד ממנו.
 
+**קוד העדכון:**
 ```sql
 UPDATE TRAINEE_GOAL
 SET Is_Achieved = true
@@ -357,6 +358,14 @@ WHERE Trainee_ID IN (
     JOIN BODY_MEASUREMENT M ON G.Trainee_ID = M.Trainee_ID
     WHERE M.Weight_Kg <= G.Target_Weight_Kg AND G.Is_Achieved = false
 );
+```
+
+**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
+```sql
+SELECT G.Trainee_ID, G.Target_Weight_Kg, M.Weight_Kg AS Current_Weight, G.Is_Achieved
+FROM TRAINEE_GOAL G
+JOIN BODY_MEASUREMENT M ON G.Trainee_ID = M.Trainee_ID
+WHERE M.Weight_Kg <= G.Target_Weight_Kg AND G.Is_Achieved = false;
 ```
 
 **צילומי מסך:**
@@ -369,14 +378,16 @@ WHERE Trainee_ID IN (
   <img src="https://github.com/user-attachments/assets/640ca25d-e659-4aaf-a500-746bea0ee87c" width="600" alt="Update 1 Run" />
 </p>
 <p align="center">
-  <b>אחרי העדכון:</b><br/>
+  <b>אחרי העדכון (טבלה ריקה):</b><br/>
   <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Update 1 After" />
 </p>
 
 <hr />
 
-### עדכון 2: הארכת שכירות לוקר למתאמנים ותיקים
-**תיאור השאילתה:** מתקנת הקצאות לוקרים שגויות על ידי הבטחה מתאמנים גברים מועברים לחדר ההלבשה לגברים ומתאמנות נשים מועברות לחדר ההלבשה לנשים.
+### עדכון 2: סידור אזורי הלוקרים לפי מגדר
+**תיאור השאילתה:** מתקנת הקצאות לוקרים שגויות על ידי הבטחה שמתאמנים גברים מועברים לחדר ההלבשה לגברים ומתאמנות נשים מועברות לחדר ההלבשה לנשים.
+
+**קוד העדכון:**
 ```sql
 UPDATE Locker
 SET Location_Zone = CASE 
@@ -392,6 +403,15 @@ WHERE Locker.Trainee_ID = Trainee_Profile.Trainee_ID
   );
 ```
 
+**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
+```sql
+SELECT L.Locker_ID, L.Location_Zone AS Current_Zone, TP.Gender AS Trainee_Gender
+FROM Locker L
+JOIN Trainee_Profile TP ON L.Trainee_ID = TP.Trainee_ID
+WHERE (TP.Gender = 'Male' AND L.Location_Zone = 'Women Locker Room')
+   OR (TP.Gender = 'Female' AND L.Location_Zone = 'Men Locker Room');
+```
+
 **צילומי מסך:**
 <p align="center">
   <b>לפני העדכון:</b><br/>
@@ -402,7 +422,7 @@ WHERE Locker.Trainee_ID = Trainee_Profile.Trainee_ID
   <img src="https://github.com/user-attachments/assets/57c1ac09-eb7f-4649-a363-78d3b7d97741" width="600" alt="Update 2 Run" />
 </p>
 <p align="center">
-  <b>אחרי העדכון:</b><br/>
+  <b>אחרי העדכון (טבלה ריקה):</b><br/>
   <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Update 2 After" />
 </p>
 
@@ -411,9 +431,19 @@ WHERE Locker.Trainee_ID = Trainee_Profile.Trainee_ID
 ### עדכון 3: העלאת רמת קושי לתוכניות ארוכות
 **תיאור השאילתה:** משנה את רמת הקושי ל-5 עבור תוכניות אימון שמשך הביצוע הממוצע שלהן בפועל (לפי היומנים) גדול מ-70 דקות.
 
+**קוד העדכון:**
 ```sql
 UPDATE TRAINING_PROGRAM
 SET Difficulty_Level = 5
+WHERE Program_ID IN (
+    SELECT Program_ID FROM WORKOUT_LOG GROUP BY Program_ID HAVING AVG(Duration_Minutes) > 70
+) AND Difficulty_Level < 5;
+```
+
+**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
+```sql
+SELECT Program_ID, Program_Name, Difficulty_Level
+FROM TRAINING_PROGRAM
 WHERE Program_ID IN (
     SELECT Program_ID FROM WORKOUT_LOG GROUP BY Program_ID HAVING AVG(Duration_Minutes) > 70
 ) AND Difficulty_Level < 5;
@@ -429,7 +459,7 @@ WHERE Program_ID IN (
   <img src="https://github.com/user-attachments/assets/eae9dd5f-d6ed-4bca-b4bf-a2c51689a345" width="600" alt="Update 3 Run" />
 </p>
 <p align="center">
-  <b>אחרי העדכון:</b><br/>
+  <b>אחרי העדכון (טבלה ריקה):</b><br/>
   <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Update 3 After" />
 </p>
 
@@ -437,13 +467,21 @@ WHERE Program_ID IN (
 
 ## חלק ג': שאילתות מחיקה (DELETE)
 
-### מחיקה 1: הסרת לוגים של אימונים
-**תיאור השאילתה:** מוחק מהטבלה של הלוגים של האימונים את כל האימונים שנעשו בחודש ינואר בשעה 2024 (למניינם).
+### מחיקה 1: מחיקת יומני אימונים היסטוריים
+**תיאור השאילתה:** מוחק מטבלת יומני האימון את כל הרשומות של האימונים שבוצעו במהלך חודש ינואר בשנת 2024.
 
+**קוד המחיקה:**
 ```sql
 DELETE FROM WORKOUT_LOG
 WHERE EXTRACT(MONTH FROM Log_Date) = 1 
   AND EXTRACT(YEAR FROM Log_Date) = 2024;
+```
+
+**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
+```sql
+SELECT Log_ID, Trainee_ID, Log_Date, Total_Calories_Burned
+FROM WORKOUT_LOG
+WHERE EXTRACT(MONTH FROM Log_Date) = 1 AND EXTRACT(YEAR FROM Log_Date) = 2024;
 ```
 
 **צילומי מסך:**
@@ -456,23 +494,30 @@ WHERE EXTRACT(MONTH FROM Log_Date) = 1
   <img src="https://github.com/user-attachments/assets/3b0659be-7459-4328-8441-59fc48b53923" width="600" alt="Delete 1 Run" />
 </p>
 <p align="center">
-  <b>אחרי המחיקה:</b><br/>
+  <b>אחרי המחיקה (טבלה ריקה):</b><br/>
   <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 1 After" />
 </p>
 
 <hr />
 
-### מחיקה 2: הסר מדידות משקל גבוהות עבור מתאמנים גברים
-**תיאור השאילתה:** מוחק את כל הרשומות שבהם הגברים שוקלים יותר מ 119 קילוגרמים.
+### מחיקה 2: הסרת מדידות משקל גבוהות עבור מתאמנים גברים
+**תיאור השאילתה:** מוחק את כל רשומות המדידה בהן המשקל שנרשם גדול מ-119 קילוגרמים, אך ורק עבור מתאמנים המוגדרים כגברים.
 
+**קוד המחיקה:**
 ```sql
 DELETE FROM BODY_MEASUREMENT
 WHERE Weight_Kg > 119
   AND Trainee_ID IN (
-      SELECT Trainee_ID
-      FROM TRAINEE_PROFILE
-      WHERE Gender = 'Male'
+      SELECT Trainee_ID FROM TRAINEE_PROFILE WHERE Gender = 'Male'
   );
+```
+
+**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
+```sql
+SELECT M.Measurement_ID, M.Trainee_ID, M.Weight_Kg, T.Gender
+FROM BODY_MEASUREMENT M
+JOIN TRAINEE_PROFILE T ON M.Trainee_ID = T.Trainee_ID
+WHERE M.Weight_Kg > 119 AND T.Gender = 'Male';
 ```
 
 **צילומי מסך:**
@@ -485,7 +530,7 @@ WHERE Weight_Kg > 119
   <img src="https://github.com/user-attachments/assets/e823d563-7e2b-482c-954b-14072a605546" width="600" alt="Delete 2 Run" />
 </p>
 <p align="center">
-  <b>אחרי המחיקה:</b><br/>
+  <b>אחרי המחיקה (טבלה ריקה):</b><br/>
   <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 2 After" />
 </p>
 
@@ -494,11 +539,20 @@ WHERE Weight_Kg > 119
 ### מחיקה 3: ניקוי היסטוריית מדידות למתאמנים שהשיגו יעד
 **תיאור השאילתה:** מוחק את כל מדידות הגוף הישנות של מתאמנים שהוגדר להם במערכת כי הם כבר השיגו את יעד המשקל שלהם (`Is_Achieved = true`).
 
+**קוד המחיקה:**
 ```sql
 DELETE FROM BODY_MEASUREMENT
 WHERE Trainee_ID IN (
     SELECT Trainee_ID FROM TRAINEE_GOAL WHERE Is_Achieved = true
 );
+```
+
+**שאילתת בקרה (SELECT להצגת הנתונים לפני ואחרי):**
+```sql
+SELECT M.Measurement_ID, M.Trainee_ID, M.Measurement_Date, G.Is_Achieved
+FROM BODY_MEASUREMENT M
+JOIN TRAINEE_GOAL G ON M.Trainee_ID = G.Trainee_ID
+WHERE G.Is_Achieved = true;
 ```
 
 **צילומי מסך:**
@@ -511,11 +565,9 @@ WHERE Trainee_ID IN (
   <img src="https://github.com/user-attachments/assets/b1c90859-b052-4d77-afac-ea0d7df5c19a" width="600" alt="Delete 3 Run" />
 </p>
 <p align="center">
-  <b>אחרי המחיקה:</b><br/>
+  <b>אחרי המחיקה (טבלה ריקה):</b><br/>
   <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 3 After" />
 </p>
-
-<hr />
 
 ## חלק ה': הוספת עמודות ואילוצים (ALTER TABLE)
 
