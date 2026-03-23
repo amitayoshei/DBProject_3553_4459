@@ -33,6 +33,8 @@
   * [חלק א'2: שאילתות שליפה (SELECT) מורכבות](#חלק-א2-שאילתות-שליפה-select-מורכבות)
   * [חלק ב': שאילתות עדכון (UPDATE)](#חלק-ג-שאילתות-עדכון-update)
   * [חלק ג': שאילתות מחיקה (DELETE)](#חלק-ד-שאילתות-מחיקה-delete)
+  * [חלק ה': אילוצים (ALTER TABLE)](#חלק-ה-אילוצים-alter-table)
+  * [חלק ו': ניהול עסקאות (Transactions) - COMMIT / ROLLBACK](#חלק-ו-ניהול-עסקאות-transactions---commit--rollback)
 
 <hr />
 
@@ -511,4 +513,94 @@ WHERE Trainee_ID IN (
 <p align="center">
   <b>אחרי המחיקה:</b><br/>
   <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 3 After" />
+</p>
+
+<hr />
+
+## חלק ה': אילוצים (ALTER TABLE)
+
+### אילוץ 1: [הכנס_כאן_את_שם_האילוץ_הראשון]
+**תיאור השינוי:** [הכנס_כאן_את_הטקסט_שמסביר_איזה_אילוץ_הוספתם_ואיזו_טבלה_הוא_משנה]
+
+**קוד ה-ALTER TABLE:**
+```sql
+[הכנס_כאן_את_קוד_ה_ALTER_TABLE_שחבר_שלך_כתב]
+```
+
+**הכנסת נתונים סותרים (בדיקת האילוץ):**
+```sql
+[הכנס_כאן_את_שאילתת_ה_INSERT_או_ה_UPDATE_שמפרה_את_האילוץ]
+```
+
+**צילום שגיאת הרצה:**
+<p align="center">
+  <img src="LINK_FOR_CONSTRAINT1_ERROR_PICTURE" width="600" alt="Constraint 1 Error" />
+</p>
+
+<hr />
+
+### אילוץ 2: [הכנס_כאן_את_שם_האילוץ_השני]
+**תיאור השינוי:** [הכנס_כאן_את_הטקסט_שמסביר_איזה_אילוץ_הוספתם_ואיזו_טבלה_הוא_משנה]
+
+**קוד ה-ALTER TABLE:**
+```sql
+[הכנס_כאן_את_קוד_ה_ALTER_TABLE_שחבר_שלך_כתב]
+```
+
+**הכנסת נתונים סותרים (בדיקת האילוץ):**
+```sql
+[הכנס_כאן_את_שאילתת_ה_INSERT_או_ה_UPDATE_שמפרה_את_האילוץ]
+```
+
+**צילום שגיאת הרצה:**
+<p align="center">
+  <img src="LINK_FOR_CONSTRAINT2_ERROR_PICTURE" width="600" alt="Constraint 2 Error" />
+</p>
+
+*(הערה: אם חבר שלך עשה יותר מ-2 אילוצים, פשוט העתק והדבק את הבלוק הזה שוב עבור כל אילוץ נוסף).*
+
+<hr />
+
+## חלק ו': ניהול עסקאות (Transactions) - COMMIT / ROLLBACK
+
+### תסריט 1: שימוש ב-ROLLBACK (ביטול עסקה)
+**תיאור התסריט:** [הכנס_כאן_את_ההסבר_על_העסקה_שניסיתם_לעשות_ולמה_בחרתם_לבצע_ROLLBACK]
+
+**קוד העסקה:**
+```sql
+[הכנס_כאן_את_בלוק_הקוד_שמתחיל_ב_BEGIN_ונגמר_ב_ROLLBACK]
+```
+
+**מצב מסד הנתונים בכל שלב:**
+<p align="center">
+  <b>1. לפני תחילת העסקה:</b><br/>
+  <img src="LINK_FOR_ROLLBACK_BEFORE_PICTURE" width="600" alt="Before Transaction" />
+</p>
+<p align="center">
+  <b>2. בתוך העסקה (לפני ה-ROLLBACK):</b><br/>
+  <img src="LINK_FOR_ROLLBACK_DURING_PICTURE" width="600" alt="During Transaction" />
+</p>
+<p align="center">
+  <b>3. אחרי ה-ROLLBACK (הנתונים חזרו לקדמותם):</b><br/>
+  <img src="LINK_FOR_ROLLBACK_AFTER_PICTURE" width="600" alt="After Rollback" />
+</p>
+
+<hr />
+
+### תסריט 2: שימוש ב-COMMIT (אישור עסקה)
+**תיאור התסריט:** [הכנס_כאן_את_ההסבר_על_העסקה_שביצעתם_ושמרתם_בהצלחה_בעזרת_COMMIT]
+
+**קוד העסקה:**
+```sql
+[הכנס_כאן_את_בלוק_הקוד_שמתחיל_ב_BEGIN_ונגמר_ב_COMMIT]
+```
+
+**מצב מסד הנתונים בכל שלב:**
+<p align="center">
+  <b>1. לפני תחילת העסקה:</b><br/>
+  <img src="LINK_FOR_COMMIT_BEFORE_PICTURE" width="600" alt="Before Commit" />
+</p>
+<p align="center">
+  <b>2. אחרי ה-COMMIT (הנתונים נשמרו באופן קבוע):</b><br/>
+  <img src="LINK_FOR_COMMIT_AFTER_PICTURE" width="600" alt="After Commit" />
 </p>
