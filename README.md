@@ -517,90 +517,136 @@ WHERE Trainee_ID IN (
 
 <hr />
 
-## חלק ה': אילוצים (ALTER TABLE)
+## חלק ה': הוספת עמודות ואילוצים (ALTER TABLE)
 
-### אילוץ 1: [הכנס_כאן_את_שם_האילוץ_הראשון]
-**תיאור השינוי:** [הכנס_כאן_את_הטקסט_שמסביר_איזה_אילוץ_הוספתם_ואיזו_טבלה_הוא_משנה]
+### שינוי מבני מקדים: הוספת עמודת שם
+לפני הוספת האילוצים, עדכנו את סכמת בסיס הנתונים והוספנו עמודה חדשה עבור שם המתאמן לטבלת הפרופילים.
+**קוד ה-ALTER TABLE:**
+```sql
+ALTER TABLE Trainee_Profile 
+ADD COLUMN Name VARCHAR(100);
+```
+
+---
+
+### אילוץ 1: תקינות השכרת לוקר (`chk_locker_rental`)
+**תיאור השינוי:** הוספנו אילוץ לטבלת `Locker` המוודא שלמות נתונים בעת השכרת לוקר. האילוץ קובע כי לא ניתן להזין תאריך סיום השכרה ללא שיוך למתאמן (Trainee_ID), ולא ניתן לשייך לוקר למתאמן ללא תאריך סיום השכרה.
 
 **קוד ה-ALTER TABLE:**
 ```sql
-[הכנס_כאן_את_קוד_ה_ALTER_TABLE_שחבר_שלך_כתב]
+ALTER TABLE Locker
+ADD CONSTRAINT chk_locker_rental 
+CHECK (
+  (Trainee_ID IS NULL AND Rental_End_Date IS NULL) OR 
+  (Trainee_ID IS NOT NULL AND Rental_End_Date IS NOT NULL)
+);
 ```
 
 **הכנסת נתונים סותרים (בדיקת האילוץ):**
+הורצו שתי בדיקות שמפרות את האילוץ בכוונה:
+1. ניסיון להזין תאריך ללא מספר מתאמן:
 ```sql
-[הכנס_כאן_את_שאילתת_ה_INSERT_או_ה_UPDATE_שמפרה_את_האילוץ]
+INSERT INTO Locker (Locker_ID, Location_Zone, Rental_End_Date, Trainee_ID)
+VALUES (501, 'VIP Zone', '2026-06-06', NULL);
+```
+2. ניסיון להזין מספר מתאמן ללא תאריך:
+```sql
+INSERT INTO Locker (Locker_ID, Location_Zone, Rental_End_Date, Trainee_ID)
+VALUES (501, 'VIP Zone', NULL, 1);
+```
+
+**צילומי שגיאת הרצה:**
+<p align="center">
+  <b>הפרה 1 - תאריך ללא מתאמן:</b><br/>
+  <img src="LINK_FOR_LOCKER_ERROR_1_PICTURE" width="700" alt="Locker Constraint Error 1" />
+</p>
+<p align="center">
+  <b>הפרה 2 - מתאמן ללא תאריך:</b><br/>
+  <img src="LINK_FOR_LOCKER_ERROR_2_PICTURE" width="700" alt="Locker Constraint Error 2" />
+</p>
+
+---
+
+### אילוץ 2: גיל מינימלי להצטרפות (`chk_trainee_age`)
+**תיאור השינוי:** הוספנו אילוץ לטבלת `Trainee_Profile` המוודא כי מתאמן יכול להירשם למכון הכושר רק אם מלאו לו לפחות 14 שנים ביום ההצטרפות.
+
+**קוד ה-ALTER TABLE:**
+```sql
+ALTER TABLE Trainee_Profile
+ADD CONSTRAINT chk_trainee_age 
+CHECK (EXTRACT(YEAR FROM AGE(Join_Date, Date_Of_Birth)) >= 14);
+```
+
+**הכנסת נתונים סותרים (בדיקת האילוץ):**
+ניסיון להזין מתאמן בן 10 (תאריך לידה ב-2015 ותאריך הצטרפות ב-2025):
+```sql
+INSERT INTO Trainee_Profile (Trainee_ID, Date_Of_Birth, Join_Date, Gender, Main_Goal, Menu_ID, Name)
+VALUES (501, '2015-01-01', '2025-01-01', 'Male', 'Flexing & Aura', NULL, 'Yair Ziv');
 ```
 
 **צילום שגיאת הרצה:**
 <p align="center">
-  <img src="LINK_FOR_CONSTRAINT1_ERROR_PICTURE" width="600" alt="Constraint 1 Error" />
+  <img src="LINK_FOR_AGE_CONSTRAINT_ERROR_PICTURE" width="700" alt="Age Constraint Error" />
 </p>
-
-<hr />
-
-### אילוץ 2: [הכנס_כאן_את_שם_האילוץ_השני]
-**תיאור השינוי:** [הכנס_כאן_את_הטקסט_שמסביר_איזה_אילוץ_הוספתם_ואיזו_טבלה_הוא_משנה]
-
-**קוד ה-ALTER TABLE:**
-```sql
-[הכנס_כאן_את_קוד_ה_ALTER_TABLE_שחבר_שלך_כתב]
-```
-
-**הכנסת נתונים סותרים (בדיקת האילוץ):**
-```sql
-[הכנס_כאן_את_שאילתת_ה_INSERT_או_ה_UPDATE_שמפרה_את_האילוץ]
-```
-
-**צילום שגיאת הרצה:**
-<p align="center">
-  <img src="LINK_FOR_CONSTRAINT2_ERROR_PICTURE" width="600" alt="Constraint 2 Error" />
-</p>
-
-*(הערה: אם חבר שלך עשה יותר מ-2 אילוצים, פשוט העתק והדבק את הבלוק הזה שוב עבור כל אילוץ נוסף).*
 
 <hr />
 
 ## חלק ו': ניהול עסקאות (Transactions) - COMMIT / ROLLBACK
 
-### תסריט 1: שימוש ב-ROLLBACK (ביטול עסקה)
-**תיאור התסריט:** [הכנס_כאן_את_ההסבר_על_העסקה_שניסיתם_לעשות_ולמה_בחרתם_לבצע_ROLLBACK]
+### תסריט 1: ביטול תהליך בעזרת ROLLBACK
+**תיאור התסריט:** פתחנו בלוק פקודות (BEGIN) וביצענו עדכון לתאריך הלידה של מתאמן מספר 1. לאחר שווידאנו שהנתון אכן השתנה באופן זמני בזיכרון, הרצנו פקודת `ROLLBACK` כדי לבטל את התהליך. ניתן לראות כי הנתון חזר למצבו ההתחלתי.
 
-**קוד העסקה:**
+**קוד התהליך:**
 ```sql
-[הכנס_כאן_את_בלוק_הקוד_שמתחיל_ב_BEGIN_ונגמר_ב_ROLLBACK]
+BEGIN;
+
+UPDATE Trainee_Profile 
+SET Date_Of_Birth = '2001-01-01' 
+WHERE Trainee_ID = 1;
+
+ROLLBACK;
 ```
 
 **מצב מסד הנתונים בכל שלב:**
 <p align="center">
-  <b>1. לפני תחילת העסקה:</b><br/>
-  <img src="LINK_FOR_ROLLBACK_BEFORE_PICTURE" width="600" alt="Before Transaction" />
+  <b>1. לפני תחילת התהליך (תאריך מקורי: 2007-09-24):</b><br/>
+  <img src="LINK_FOR_ROLLBACK_BEFORE_PICTURE" width="400" alt="Before Rollback" />
 </p>
 <p align="center">
-  <b>2. בתוך העסקה (לפני ה-ROLLBACK):</b><br/>
-  <img src="LINK_FOR_ROLLBACK_DURING_PICTURE" width="600" alt="During Transaction" />
+  <b>2. בתוך הבלוק, לפני הביטול (התאריך השתנה ל-2001-01-01):</b><br/>
+  <img src="LINK_FOR_ROLLBACK_DURING_PICTURE" width="400" alt="During Rollback" />
 </p>
 <p align="center">
-  <b>3. אחרי ה-ROLLBACK (הנתונים חזרו לקדמותם):</b><br/>
-  <img src="LINK_FOR_ROLLBACK_AFTER_PICTURE" width="600" alt="After Rollback" />
+  <b>3. אחרי ה-ROLLBACK (הנתון חזר לתאריך המקורי):</b><br/>
+  <img src="LINK_FOR_ROLLBACK_AFTER_PICTURE" width="400" alt="After Rollback" />
 </p>
 
 <hr />
 
-### תסריט 2: שימוש ב-COMMIT (אישור עסקה)
-**תיאור התסריט:** [הכנס_כאן_את_ההסבר_על_העסקה_שביצעתם_ושמרתם_בהצלחה_בעזרת_COMMIT]
+### תסריט 2: שמירת תהליך בעזרת COMMIT
+**תיאור התסריט:** פתחנו בלוק פקודות וביצענו עדכון לתאריך ההצטרפות של מתאמן מספר 2. הפעם, הרצנו פקודת `COMMIT` בסיום. ניתן לראות כי השינוי נשמר במסד הנתונים באופן קבוע וסופי.
 
-**קוד העסקה:**
+**קוד התהליך:**
 ```sql
-[הכנס_כאן_את_בלוק_הקוד_שמתחיל_ב_BEGIN_ונגמר_ב_COMMIT]
+BEGIN;
+
+UPDATE Trainee_Profile 
+SET Join_Date = '2025-01-01' 
+WHERE Trainee_ID = 2;
+
+COMMIT;
 ```
 
 **מצב מסד הנתונים בכל שלב:**
 <p align="center">
-  <b>1. לפני תחילת העסקה:</b><br/>
-  <img src="LINK_FOR_COMMIT_BEFORE_PICTURE" width="600" alt="Before Commit" />
+  <b>1. לפני תחילת התהליך (תאריך מקורי: 2026-02-01):</b><br/>
+  <img src="LINK_FOR_COMMIT_BEFORE_PICTURE" width="400" alt="Before Commit" />
 </p>
 <p align="center">
-  <b>2. אחרי ה-COMMIT (הנתונים נשמרו באופן קבוע):</b><br/>
-  <img src="LINK_FOR_COMMIT_AFTER_PICTURE" width="600" alt="After Commit" />
+  <b>2. בתוך הבלוק, לאחר העדכון (התאריך השתנה ל-2025-01-01):</b><br/>
+  <img src="LINK_FOR_COMMIT_DURING_PICTURE" width="400" alt="During Commit" />
+</p>
+<p align="center">
+  <b>3. אחרי ה-COMMIT (הנתון נשמר ונשאר על 2025-01-01):</b><br/>
+  <img src="LINK_FOR_COMMIT_AFTER_PICTURE" width="400" alt="After Commit" />
 </p>
