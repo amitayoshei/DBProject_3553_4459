@@ -435,28 +435,27 @@ WHERE Program_ID IN (
 
 ## חלק ג': שאילתות מחיקה (DELETE)
 
-### מחיקה 1: הסרת שיוך לתוכניות עבור מתאמני סיבולת
-**תיאור השאילתה:** מוחק מהטבלה המקשרת (`HAS_PROGRAM`) את השיוך לתוכניות אימון עבור כל המתאמנים שהמטרה המרכזית שלהם היא 'Endurance' (סיבולת).
+### מחיקה 1: הסרת לוגים של אימונים
+**תיאור השאילתה:** מוחק מהטבלה של הלוגים של האימונים את כל האימונים שנעשו בחודש ינואר בשעה 2024 (למניינם).
 
 ```sql
-DELETE FROM HAS_PROGRAM
-WHERE Trainee_ID IN (
-    SELECT Trainee_ID FROM TRAINEE_PROFILE WHERE Main_Goal = 'Endurance'
-);
+DELETE FROM WORKOUT_LOG
+WHERE EXTRACT(MONTH FROM Log_Date) = 1 
+  AND EXTRACT(YEAR FROM Log_Date) = 2024;
 ```
 
 **צילומי מסך:**
 <p align="center">
   <b>לפני המחיקה:</b><br/>
-  <img src="LINK_FOR_DELETE1_BEFORE_PICTURE" width="600" alt="Delete 1 Before" />
+  <img src="https://github.com/user-attachments/assets/6aca4240-60b5-4f78-8d7b-5f6adbf882fb" width="600" alt="Delete 1 Before" />
 </p>
 <p align="center">
   <b>הרצת השאילתה:</b><br/>
-  <img src="LINK_FOR_DELETE1_RUN_PICTURE" width="600" alt="Delete 1 Run" />
+  <img src="https://github.com/user-attachments/assets/3b0659be-7459-4328-8441-59fc48b53923" width="600" alt="Delete 1 Run" />
 </p>
 <p align="center">
   <b>אחרי המחיקה:</b><br/>
-  <img src="LINK_FOR_DELETE1_AFTER_PICTURE" width="600" alt="Delete 1 After" />
+  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 1 After" />
 </p>
 
 <hr />
@@ -503,13 +502,13 @@ WHERE Trainee_ID IN (
 **צילומי מסך:**
 <p align="center">
   <b>לפני המחיקה:</b><br/>
-  <img src="LINK_FOR_DELETE3_BEFORE_PICTURE" width="600" alt="Delete 3 Before" />
+  <img src="https://github.com/user-attachments/assets/0f8da495-eef3-4ca7-9c7d-189ea87395a7" width="600" alt="Delete 3 Before" />
 </p>
 <p align="center">
   <b>הרצת השאילתה:</b><br/>
-  <img src="LINK_FOR_DELETE3_RUN_PICTURE" width="600" alt="Delete 3 Run" />
+  <img src="https://github.com/user-attachments/assets/b1c90859-b052-4d77-afac-ea0d7df5c19a" width="600" alt="Delete 3 Run" />
 </p>
 <p align="center">
   <b>אחרי המחיקה:</b><br/>
-  <img src="LINK_FOR_DELETE3_AFTER_PICTURE" width="600" alt="Delete 3 After" />
+  <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 3 After" />
 </p>
