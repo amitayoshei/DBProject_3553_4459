@@ -569,8 +569,7 @@ WHERE G.Is_Achieved = true;
   <img src="https://github.com/user-attachments/assets/9b77ca70-dafe-4cce-b776-8a8e63bf7a80" width="600" alt="Delete 3 After" />
 </p>
 
-## חלק ד': הוספת עמודות ואילוצים (ALTER TABLE)
-
+## חלק ד': אילוצים (ALTER TABLE)
 ### שינוי מבני מקדים: הוספת עמודת שם
 לפני הוספת האילוצים, עדכנו את סכמת בסיס הנתונים והוספנו עמודה חדשה עבור שם המתאמן לטבלת הפרופילים.
 **קוד ה-ALTER TABLE:**
