@@ -35,6 +35,9 @@
   * [חלק ד'1: שאילתות שליפה (SELECT) כפולות - השוואת יעילות](#חלק-ד1-שאילתות-שליפה-select-כפולות---השוואת-יעילות)
   * [חלק ד'2: שאילתות שליפה (SELECT) מורכבות](#חלק-ד2-שאילתות-שליפה-select-מורכבות)
   * [חלק ה': ניהול עסקאות (Transactions) - COMMIT / ROLLBACK](#חלק-ה-ניהול-עסקאות-transactions---commit--rollback)
+* [🔗 שלב ג': שילוב מערכות (Integration) ויצירת תצוגות (Views)](#-שלב-ג-שילוב-מערכות-integration-ויצירת-תצוגות-views)
+  * [חלק 1: החלטות ארכיטקטוניות ותהליך ה-ETL](#חלק-1-החלטות-ארכיטקטוניות-ותהליך-ה-etl)
+  * [חלק 2: תצוגות מסד נתונים ושאילתות משולבות](#חלק-2-תצוגות-מסד-נתונים-ושאילתות-משולבות)
 
 <hr />
 
@@ -480,3 +483,221 @@ CHECK (Join_Date >= Date_Of_Birth + INTERVAL '14 years');
   <b>3. אחרי ה-COMMIT (הנתון נשמר סופית):</b><br/>
   <b><img width="345" height="295" alt="Screenshot 2026-03-22 163908" src="https://github.com/user-attachments/assets/56856dd2-25f4-423d-a1ba-65a2f322529a" /></b>
 </p>
+
+
+# 🔗 שלב ג': שילוב מערכות (Integration) ויצירת תצוגות (Views)
+
+## חלק 1: החלטות ארכיטקטוניות ותהליך ה-ETL
+
+### 1.1 החלטות ארכיטקטוניות מרכזיות בשילוב
+במהלך השילוב של שתי המערכות הישנות (**מערכת א' - ניהול פיננסי** ו-**מערכת ב' - ניהול כושר ואימונים**), התקבלו מספר החלטות ארכיטקטוניות קריטיות כדי להבטיח סקלאביליות, נרמול (Normalization) ותחזוקה לטווח ארוך.
+
+#### 1. אסטרטגיית שילוב Greenfield (אפשרות ג')
+במקום למזג מערכת אחת ישירות לתוך השנייה, אימצנו גישת **Greenfield** - עיצוב סכמה מאוחדת וחדשה לחלוטין וייבוא הנתונים לתוכה.
+החלטה זו עזרה לנו:
+* למנוע חוב טכני מצטבר.
+* לתקן חוסר עקביות לוגית מהמערכות הישנות.
+* להסיר תלויות בעייתיות (כמו הצימוד הישן בין ניהול לוקרים לתפריטי תזונה).
+* ליצור מבנה מסד נתונים מנורמל ונקי יותר.
+
+#### 2. הפרדת תחומי אחריות משתמשים (Single Responsibility Principle)
+במקום לתחזק טבלת משתמשים אחת עמוסה ("מפלצתית"), ישות המשתמש פוצלה לשתי טבלאות ייעודיות ביחס של **1:1**:
+* `core_user`: שומרת נתוני זהות ופרטי קשר בלבד.
+* `trainee_metadata`: שומרת מידע ביולוגי, דמוגרפי ומידע הקשור לאימונים.
+הפרדה זו שיפרה משמעותית את התחזוקה והנרמול במערכת.
+
+#### 3. המערכת הפיננסית כמקור האמת (Source of Truth)
+במקרי התנגשות נתונים בין המערכות, **מערכת א' (פיננסית)** נבחרה כמקור הסמכות:
+* מתאמנים שהיו קיימים במערכת ב' ללא רישום פיננסי תואם סוננו החוצה.
+* תאריכי תחילת מנוי נגזרו בעיקר מתאריך הרכישה החוקי המוקדם ביותר.
+* נמנעה לחלוטין יצירת רשומות יתומות (Orphan records) במהלך המיגרציה.
+
+#### 4. תאריך עוגן קבוע לחישובי זמן
+מכיוון שנתוני הדמו משתרעים על השנים **2020-2024**, קבענו תאריך עוגן קבוע לפרויקט:
+```sql
+DATE '2024-01-01'
+```
+במקום להסתמך על התאריך הנוכחי. זה מבטיח ש:
+* בדיקות פקיעת מנוי יישארו רלוונטיות.
+* חישובי גיל יפיקו תוצאות הגיוניות ומציאותיות.
+* הפלטים של נתוני הדמו יישארו עקביים והדירים לאורך זמן ללא תלות ביום בדיקת הפרויקט.
+
+---
+
+### 1.2 סקירת תהליך ה-ETL (Extract, Transform, Load)
+תהליך השילוב פעל לפי מתודולוגיית **ETL מבוססת Staging** מובנית וחולק לשלושה שלבים עיקריים:
+
+#### א. שלב ה-Staging (השהייה)
+ייצוא CSV גולמי משתי מערכות המקור יובא לטבלאות זמניות (Staging tables) שקיבלו את הקידומת:
+```sql
+temp_
+```
+מאפייני הטבלאות הזמניות:
+* ללא מפתחות זרים (Foreign Keys).
+* ללא אילוצי מערכת (Constraints).
+* נתונים גולמיים לחלוטין ללא אימות.
+הדבר איפשר עיבוד מקדים ובטוח לפני ההכנסה של הנתונים לסכמה הסופית.
+
+#### ב. שלב ההתמרה והטעינה (Transform & Load)
+סקריפטים להתמרת נתונים יושמו באמצעות פעולות אצווה של `INSERT INTO ... SELECT`.
+
+**התמרות עיקריות שבוצעו:**
+* **המרת תאריכים מפורשת (`::DATE`):** שימשה להמרת ערכי טקסט שיובאו באופן שגוי לשדות תאריך חוקיים.
+* **פתרון קונפליקטים בעזרת `COALESCE()`:** פונקציה זו שימשה לתיעדוף ערכים חוקיים ותקינים בין שתי המערכות במקרה של שדות חסרים (NULL).
+* **איחוד מפתחות זרים:** המזהים מהמערכות הישנות (`Customer_ID`, `Trainee_ID`) אוחדו למפתח רציף, אחיד וחדש בשם: `User_ID`.
+
+#### ג. שלב הניקוי (Cleanup)
+לאחר מיגרציה ואימות מוצלחים, כל טבלאות ה-Staging הזמניות הוסרו לחלוטין מן המסד באמצעות פקודת:
+```sql
+DROP TABLE
+```
+זה הבטיח שמסד הנתונים בסביבת הייצור יישאר נקי, קל וממוטב.
+
+<hr />
+
+## חלק 2: תצוגות מסד נתונים ושאילתות משולבות
+
+### תצוגה 1: מחלקת כספים (מערכת א')
+**תיאור התצוגה:** תוכננה במיוחד עבור מחלקת הכספים וניהול המנויים. היא מציגה מנויים פעילים בלבד, פרטי קשר, פרטי חוזה, וחישוב דינמי של ימי המנוי הנותרים. 
+**שילוב טבלאות:** התצוגה משלבת את הטבלאות `core_user` ו-`subscription`.
+
+**קוד SQL ליצירת התצוגה:**
+```sql
+CREATE OR REPLACE VIEW vw_active_subscriptions AS
+SELECT
+    cu.user_id,
+    cu.first_name || ' ' || cu.last_name AS full_name,
+    cu.phone_number,
+    s.contract_number,
+    s.purchase_date,
+    s.expiration_date,
+    s.total_cost,
+    (s.expiration_date - DATE '2024-01-01') AS days_remaining
+FROM public.core_user cu
+JOIN public.subscription s
+    ON cu.user_id = s.user_id
+WHERE s.expiration_date >= DATE '2024-01-01';
+```
+
+**שאילתה 1: פקיעת מנויים קרובה**
+שליפת לקוחות שהמנוי שלהם יפוג ב-30 הימים הקרובים. מאפשר למחלקת המכירות של המכון ליצור קשר יזום לחידוש המנוי.
+```sql
+SELECT
+    full_name,
+    phone_number,
+    days_remaining
+FROM vw_active_subscriptions
+WHERE days_remaining <= 30
+  AND days_remaining >= 0
+ORDER BY days_remaining ASC;
+```
+
+**שאילתה 2: תחזית הכנסות מחידושים חודשיים**
+קיבוץ מנויים פעילים לפי חודש פקיעה וחישוב הערך הכולל הצפוי מחידושים, לטובת בניית תחזית הכנסות להנהלה.
+```sql
+SELECT
+    EXTRACT(MONTH FROM expiration_date) AS expiration_month,
+    COUNT(contract_number) AS total_active_contracts,
+    SUM(total_cost) AS total_value
+FROM vw_active_subscriptions
+GROUP BY EXTRACT(MONTH FROM expiration_date)
+ORDER BY expiration_month;
+```
+
+<hr />
+
+### תצוגה 2: מחלקת כושר ואימונים (מערכת ב')
+**תיאור התצוגה:** ריכוז כל המידע הקריטי הנדרש למאמני חדר הכושר. משלבת מידע דמוגרפי, יעדי כושר, חישוב גיל נוכחי ונתוני אישור רפואי.
+**שילוב טבלאות:** התצוגה מאחדת את `core_user`, `trainee_metadata`, ו-`health_declaration`.
+
+**קוד SQL ליצירת התצוגה:**
+```sql
+CREATE OR REPLACE VIEW vw_trainee_fitness_profile AS
+SELECT
+    cu.user_id,
+    cu.first_name,
+    cu.last_name,
+    tm.gender,
+    tm.main_goal,
+    EXTRACT(YEAR FROM AGE(DATE '2024-01-01', tm.date_of_birth)) AS age,
+    hd.doctor_name,
+    hd.limitations_notes,
+    hd.is_valid AS medical_clearance
+FROM public.core_user cu
+JOIN public.trainee_metadata tm
+    ON cu.user_id = tm.user_id
+LEFT JOIN public.health_declaration hd
+    ON cu.user_id = hd.user_id;
+```
+
+**שאילתה 1: פילוח קהל יעד (תוכנית הרזיה)**
+איתור מתאמנים בני 40 ומעלה שהיעד המרכזי שלהם הוא ירידה במשקל (Weight Loss) ובעלי אישור רפואי בתוקף. משמש להזמנת מועמדים לתוכניות ייעודיות.
+```sql
+SELECT
+    first_name,
+    last_name,
+    age,
+    main_goal
+FROM vw_trainee_fitness_profile
+WHERE age >= 40
+  AND main_goal = 'Weight Loss'
+  AND medical_clearance = 1;
+```
+
+**שאילתה 2: אכיפת בטיחות רפואית**
+שאילתת בקרת בטיחות קריטית. שולפת מתאמנים שהצהרת הבריאות שלהם חסרה או אינה בתוקף, במטרה למנוע פעילות אימון מסכנת חיים.
+```sql
+SELECT
+    user_id,
+    first_name,
+    last_name,
+    limitations_notes
+FROM vw_trainee_fitness_profile
+WHERE medical_clearance = 0
+   OR medical_clearance IS NULL;
+```
+
+<hr />
+
+### תצוגה 3: תפעול ולוגיסטיקה (שילוב מערכות מלא)
+**תיאור התצוגה:** מדגימה את אחד היתרונות הגדולים של שילוב המערכות - היכולת לחבר תשתית ציוד פיזית עם נתוני זהות הלקוח. מציגה מידע על לוקרים, מיקומם, ושם/אימייל של המתאמן.
+**שילוב טבלאות:** התצוגה משלבת את `locker` ו-`core_user`.
+
+**קוד SQL ליצירת התצוגה:**
+```sql
+CREATE OR REPLACE VIEW vw_locker_utilization AS
+SELECT
+    l.locker_id,
+    l.location_zone,
+    l.rental_end_date,
+    cu.user_id,
+    cu.first_name || ' ' || cu.last_name AS occupant_name,
+    cu.email
+FROM public.locker l
+LEFT JOIN public.core_user cu
+    ON l.user_id = cu.user_id;
+```
+
+**שאילתה 1: לוקרים זמינים באזור הבריכה**
+איתור כל הלוקרים הפנויים (ללא מתאמן מוקצה) הממוקמים באזור הבריכה (Pool Area), לשירות צוות הקבלה.
+```sql
+SELECT
+    locker_id,
+    location_zone
+FROM vw_locker_utilization
+WHERE occupant_name IS NULL
+  AND location_zone = 'Pool Area';
+```
+
+**שאילתה 2: אכיפת השכרת לוקרים שפגה תוקף**
+מזהה לוקרים שתקופת ההשכרה שלהם הסתיימה ביחס לתאריך העוגן של הפרויקט. שולפת את כתובות האימייל של הלקוחות הרלוונטיים כדי לאפשר פנייה ישירה בנושא פינוי הציוד.
+```sql
+SELECT
+    locker_id,
+    occupant_name,
+    email,
+    rental_end_date
+FROM vw_locker_utilization
+WHERE rental_end_date < DATE '2024-01-01'
+  AND occupant_name IS NOT NULL;
+```
