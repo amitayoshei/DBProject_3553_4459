@@ -38,6 +38,12 @@
 * [🔗 שלב ג': שילוב מערכות (Integration) ויצירת תצוגות (Views)](#-שלב-ג-שילוב-מערכות-integration-ויצירת-תצוגות-views)
   * [חלק 1: החלטות ארכיטקטוניות ותהליך ה-ETL](#חלק-1-החלטות-ארכיטקטוניות-ותהליך-ה-etl)
   * [חלק 2: תצוגות מסד נתונים ושאילתות משולבות](#חלק-2-תצוגות-מסד-נתונים-ושאילתות-משולבות)
+* [🧠 שלב ד': תכנות מסד נתונים (PL/pgSQL)](#-שלב-ד-תכנות-מסד-נתונים-plpgsql)
+  * [חלק 1: טיוב נתונים מתקדם (Data Cleansing)](#חלק-1-טיוב-נתונים-מתקדם-data-cleansing)
+  * [חלק 2: טריגרים (Triggers)](#חלק-2-טריגרים-triggers)
+  * [חלק 3: פרוצדורות (Procedures)](#חלק-3-פרוצדורות-procedures)
+  * [חלק 4: פונקציות (Functions)](#חלק-4-פונקציות-functions)
+  * [חלק 5: תוכניות ראשיות ובדיקות (Main Programs)](#חלק-5-תוכניות-ראשיות-ובדיקות-main-programs)
 
 <hr />
 
@@ -699,5 +705,667 @@ SELECT
     rental_end_date
 FROM vw_locker_utilization
 WHERE rental_end_date < DATE '2024-01-01'
-  AND occupant_name IS NOT NULL;
+AND occupant_name IS NOT NULL;
+```
+
+# 🧠 שלב ד': תכנות מסד נתונים (PL/pgSQL)
+
+בשלב זה מימשנו לוגיקה עסקית מורכבת ישירות בתוך מסד הנתונים באמצעות שפת **PL/pgSQL**. הקוד מכסה את כל האלמנטים הנדרשים: סמנים מפורשים ומובלעים, Ref Cursor, פקודות DML, הסתעפויות, לולאות, חריגות ורשומות.
+
+<hr />
+
+## 🛠️ טיוב נתונים — AlterTable.sql
+
+קובץ זה מכיל **6 שאילתות SQL** המנקות לוגית את כל הנתונים שהגיעו מתהליך האינטגרציה, ומייצרות בסיס נתוני אמין לפני הרצת קוד ה-PL/pgSQL.
+
+### עדכון 1: סנכרון תאריכי יומן אימון
+
+מעדכן את `log_date` בטבלת `workout_log` כך שכל תאריך אימון יהיה לאחר תאריך עוגן המערכת (`2024-01-01`) ולאחר תאריך ההצטרפות של המתאמן. השאילתה מחשבת מחדש תאריך הגיוני תוך שימור הפיזור היחסי המקורי בין הרשומות.
+
+```sql
+UPDATE public.workout_log wl
+SET log_date = GREATEST(DATE '2024-01-01', cu.join_date) + 
+               ((wl.log_date - DATE '2020-01-01')::int % 365) * INTERVAL '1 day'
+FROM public.core_user cu
+WHERE wl.user_id = cu.user_id
+  AND (wl.log_date < DATE '2024-01-01' OR wl.log_date < cu.join_date);
+```
+
+### עדכון 2: סנכרון תאריכי מדידות גוף
+
+אותו עיקרון על טבלת `body_measurement`. מבטיח שאף מדידה לא תקדם להצטרפות המתאמן או לפתיחת המכון.
+
+```sql
+UPDATE public.body_measurement bm
+SET measurement_date = GREATEST(DATE '2024-01-01', cu.join_date) + 
+                       ((bm.measurement_date - DATE '2020-01-01')::int % 365) * INTERVAL '1 day'
+FROM public.core_user cu
+WHERE bm.user_id = cu.user_id
+  AND (bm.measurement_date < DATE '2024-01-01' OR bm.measurement_date < cu.join_date);
+```
+
+### עדכון 3: סנכרון תאריכי יעדים
+
+מעדכן את `creation_date` ו-`target_date` בטבלת `trainee_goal` עבור כל שורה שתאריכיה קדומים לתאריך ההצטרפות או לתאריך העוגן. `target_date` מוגדר כ-180 יום לאחר תאריך הגיוני של יצירת היעד.
+
+```sql
+UPDATE public.trainee_goal tg
+SET creation_date = GREATEST(DATE '2024-01-01', cu.join_date),
+    target_date   = GREATEST(DATE '2024-01-01', cu.join_date) + INTERVAL '180 days'
+FROM public.core_user cu
+WHERE tg.user_id = cu.user_id
+  AND (tg.creation_date < DATE '2024-01-01' OR tg.creation_date < cu.join_date);
+```
+
+### עדכון 4: יציבות גובה (Height Stabilization)
+
+נתוני הגובה של אותו מתאמן יכולים להשתנות ברשומות שונות (כשגיאת ייצוא). השאילתה מחשבת גובה ממוצע לכל מתאמן ומשווה את כל שורותיו לאותו הגובה היציב.
+
+```sql
+WITH height_anchor AS (
+    SELECT
+        user_id,
+        ROUND(AVG(height_cm), 1) AS stable_height
+    FROM public.body_measurement
+    GROUP BY user_id
+)
+UPDATE public.body_measurement bm
+SET height_cm = ha.stable_height
+FROM height_anchor ha
+WHERE bm.user_id = ha.user_id
+  AND bm.height_cm <> ha.stable_height;
+```
+
+### עדכון 5: החלקת משקלים (Weight Stabilization)
+
+הנתונים מכילים קפיצות משקל בלתי הגיוניות בין מדידות עוקבות. שימוש בפונקציות חלון `ROW_NUMBER()` ו-`FIRST_VALUE()` ליצירת ירידה הדרגתית וחלקה של 0.3% בין כל מדידה ומדידה.
+
+```sql
+WITH ordered_measurements AS (
+    SELECT
+        measurement_id,
+        user_id,
+        measurement_date,
+        weight_kg,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY measurement_date) AS rn,
+        FIRST_VALUE(weight_kg) OVER (PARTITION BY user_id ORDER BY measurement_date) AS first_weight
+    FROM public.body_measurement
+),
+smoothed AS (
+    SELECT
+        measurement_id,
+        ROUND(
+            first_weight * POWER(0.997, rn - 1)::numeric,
+            2
+        ) AS smoothed_weight
+    FROM ordered_measurements
+)
+UPDATE public.body_measurement bm
+SET weight_kg = s.smoothed_weight
+FROM smoothed s
+WHERE bm.measurement_id = s.measurement_id
+  AND bm.weight_kg <> s.smoothed_weight;
+```
+
+### עדכון 6: סנכרון BMI (BMI Synchronization)
+
+לאחר ייצוב המשקל והגובה, מחשבים מחדש את `bmi_score` לפי הנוסחה הרפואית הסטנדרטית `משקל / (גובה_במטרים)^2`. השאילתה מעדכנת רק שורות שבהן ה-BMI אינו תואם את הערכים המעודכנים.
+
+```sql
+UPDATE public.body_measurement
+SET bmi_score = ROUND(
+    weight_kg / POWER(height_cm / 100.0, 2),
+    1
+)
+WHERE height_cm > 0
+  AND bmi_score IS DISTINCT FROM ROUND(
+    weight_kg / POWER(height_cm / 100.0, 2),
+    1
+  );
+```
+
+<hr />
+
+## ⚡ טריגר 1: אימות תאריך השכרת לוקר
+
+**קובץ:** `trigger1.sql` | **טבלה:** `locker` | **אירוע:** `BEFORE INSERT OR UPDATE`
+
+טריגר זה מגן על שלמות נתוני ההשכרה בטבלת `locker`. בכל הכנסה או עדכון של שורה, מתבצעות הבדיקות הבאות:
+
+- **אימות קיום משתמש:** שליפת `join_date` מטבלת `core_user` באמצעות Implicit Cursor (`SELECT INTO`). אם המשתמש לא קיים — `RAISE EXCEPTION`.
+- **אימות עתידיות תאריך:** `rental_end_date` חייב להיות לאחר `2024-01-01`.
+- **אימות ביחס לתאריך הצטרפות:** `rental_end_date` חייב להיות לאחר `join_date` של המשתמש.
+
+האלמנטים של PL/pgSQL שמשמשים: Implicit Cursor, Record, Branching (IF/THEN), Exception.
+
+```sql
+CREATE OR REPLACE FUNCTION public.trg_func_locker_rental_future_date()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_join_date DATE;
+BEGIN
+    IF NEW.user_id IS NOT NULL AND NEW.rental_end_date IS NOT NULL THEN
+        SELECT join_date INTO v_join_date
+        FROM public.core_user
+        WHERE user_id = NEW.user_id;
+
+        IF v_join_date IS NULL THEN
+            RAISE EXCEPTION 'Locker assignment failed: user_id % does not exist in core_user.', NEW.user_id;
+        END IF;
+
+        IF NEW.rental_end_date <= DATE '2024-01-01' THEN
+            RAISE EXCEPTION 'Locker assignment failed: rental_end_date (%) must be after the system anchor date 2024-01-01.', NEW.rental_end_date;
+        END IF;
+
+        IF NEW.rental_end_date <= v_join_date THEN
+            RAISE EXCEPTION 'Locker assignment failed: rental_end_date (%) cannot be on or before the user join_date (%).', NEW.rental_end_date, v_join_date;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_locker_rental_future_date ON public.locker;
+
+CREATE TRIGGER trg_locker_rental_future_date
+BEFORE INSERT OR UPDATE ON public.locker
+FOR EACH ROW
+EXECUTE FUNCTION public.trg_func_locker_rental_future_date();
+```
+
+**בדיקה מוצעת — הפרת האילוץ:**
+```sql
+UPDATE public.locker
+SET rental_end_date = '2020-01-01', user_id = 1
+WHERE locker_id = 3;
+```
+
+**תוצאה צפויה:** `ERROR: Locker assignment failed: rental_end_date (2020-01-01) must be after the system anchor date 2024-01-01.`
+
+<hr />
+
+## ⚡ טריגר 2: אימות יומן אימון
+
+**קובץ:** `trigger2.sql` | **טבלה:** `workout_log` | **אירוע:** `BEFORE INSERT OR UPDATE`
+
+טריגר המגן על אמינות נתוני יומן האימון. בכל הכנסה או עדכון:
+
+- שולף נתוני המשתמש לתוך **Record** (`v_user_rec`) באמצעות Implicit Cursor.
+- בודק שה-`log_date` אינו קדמוני לתאריך ההצטרפות ולתאריך העוגן.
+- מאמת שציון הפידבק (`trainee_feedback_rating`) בין 1 ל-10.
+
+האלמנטים של PL/pgSQL שמשמשים: Implicit Cursor, Record, Branching (IF/THEN/ELSIF), Exception.
+
+```sql
+CREATE OR REPLACE FUNCTION public.trg_func_workout_log_date_check()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_join_date DATE;
+    v_user_rec  RECORD;
+BEGIN
+    SELECT user_id, join_date INTO v_user_rec
+    FROM public.core_user
+    WHERE user_id = NEW.user_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Workout log rejected: user_id % does not exist.', NEW.user_id;
+    END IF;
+
+    v_join_date := v_user_rec.join_date;
+
+    IF NEW.log_date < v_join_date THEN
+        RAISE EXCEPTION 'Workout log rejected: log_date (%) is before the user join_date (%) for user_id %.', NEW.log_date, v_join_date, NEW.user_id;
+    END IF;
+
+    IF NEW.log_date < DATE '2024-01-01' THEN
+        RAISE EXCEPTION 'Workout log rejected: log_date (%) is before the system anchor date 2024-01-01.', NEW.log_date;
+    END IF;
+
+    IF NEW.trainee_feedback_rating < 1 OR NEW.trainee_feedback_rating > 10 THEN
+        RAISE EXCEPTION 'Workout log rejected: trainee_feedback_rating (%) must be between 1 and 10.', NEW.trainee_feedback_rating;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_workout_log_date_check ON public.workout_log;
+
+CREATE TRIGGER trg_workout_log_date_check
+BEFORE INSERT OR UPDATE ON public.workout_log
+FOR EACH ROW
+EXECUTE FUNCTION public.trg_func_workout_log_date_check();
+```
+
+**בדיקה מוצעת — הפרת האילוץ:**
+```sql
+INSERT INTO public.workout_log
+  (log_id, log_date, duration_minutes, total_calories_burned,
+   average_heart_rate, trainee_feedback_rating, coach_notes, program_id, user_id)
+VALUES
+  (99999, '2019-06-01', 60, 400, 130, 7, 'Test', 1, 1);
+```
+
+**תוצאה צפויה:** `ERROR: Workout log rejected: log_date (2019-06-01) is before the system anchor date 2024-01-01.`
+
+<hr />
+
+## 📦 פרוצדורה 1: הארכת חוזי לוקרים פגי תוקף
+
+**קובץ:** `procedure1.sql` | **פקודה:** `CALL public.proc_extend_expiring_lockers();`
+
+פרוצדורה המבצעת עדכון המוני של לוקרים שתאריך פקיעתם נמצא בתוך 90 הימים הראשונים מתאריך העוגן. לכל לוקר כזה מחושב תאריך הארכה חדש בהתאם לקרבת הפקיעה.
+
+**אלמנטים של PL/pgSQL:**
+
+| אלמנט | יישום |
+| :--- | :--- |
+| Explicit Cursor | `CURSOR FOR SELECT` הסורק לוקרים עם תאריך פקיעה בחלון זמן מוגדר |
+| Loop | `LOOP / FETCH / EXIT WHEN NOT FOUND` — איטרציה רשומה-רשומה |
+| Branching | `IF / ELSIF / ELSE` — קביעת משך הארכה (365 / 180 / 90 יום) |
+| DML | `UPDATE public.locker SET rental_end_date = ...` לכל רשומה |
+| Record | `v_locker_rec RECORD` לשמירת נתוני כל לוקר |
+
+```sql
+CREATE OR REPLACE PROCEDURE public.proc_extend_expiring_lockers()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_locker_rec RECORD;
+    v_cursor CURSOR FOR
+        SELECT l.locker_id, l.user_id, l.rental_end_date, cu.join_date
+        FROM public.locker l
+        JOIN public.core_user cu ON l.user_id = cu.user_id
+        WHERE l.rental_end_date IS NOT NULL
+          AND l.rental_end_date BETWEEN DATE '2024-01-01' AND DATE '2024-01-01' + INTERVAL '90 days';
+    v_count INT := 0;
+    v_new_end_date DATE;
+BEGIN
+    OPEN v_cursor;
+    LOOP
+        FETCH v_cursor INTO v_locker_rec;
+        EXIT WHEN NOT FOUND;
+
+        IF v_locker_rec.rental_end_date < DATE '2024-01-01' + INTERVAL '30 days' THEN
+            v_new_end_date := v_locker_rec.rental_end_date + INTERVAL '365 days';
+        ELSIF v_locker_rec.rental_end_date < DATE '2024-01-01' + INTERVAL '60 days' THEN
+            v_new_end_date := v_locker_rec.rental_end_date + INTERVAL '180 days';
+        ELSE
+            v_new_end_date := v_locker_rec.rental_end_date + INTERVAL '90 days';
+        END IF;
+
+        UPDATE public.locker
+        SET rental_end_date = v_new_end_date
+        WHERE locker_id = v_locker_rec.locker_id;
+
+        v_count := v_count + 1;
+        RAISE NOTICE 'Locker % (user %): extended from % to %',
+            v_locker_rec.locker_id, v_locker_rec.user_id,
+            v_locker_rec.rental_end_date, v_new_end_date;
+    END LOOP;
+    CLOSE v_cursor;
+
+    RAISE NOTICE 'proc_extend_expiring_lockers complete: % lockers updated.', v_count;
+END;
+$$;
+```
+
+<hr />
+
+## 📦 פרוצדורה 2: זיהוי ועדכון יעדים שהושגו
+
+**קובץ:** `procedure2.sql` | **פקודה:** `CALL public.proc_award_achieved_goals();`
+
+פרוצדורה העוברת על כל היעדים הלא-מושגים ובודקת אם המדידה האחרונה לפני תאריך היעד עומדת ביעדי המשקל ואחוז השומן. אם כן — מסמנת את היעד כמושג.
+
+**אלמנטים של PL/pgSQL:**
+
+| אלמנט | יישום |
+| :--- | :--- |
+| Implicit Cursor | לולאת `FOR v_goal_rec IN SELECT ...` |
+| Record | `v_goal_rec RECORD` לשמירת נתוני כל יעד |
+| Exception | בלוק `BEGIN / EXCEPTION WHEN OTHERS / END` בתוך כל איטרציה |
+| Branching | `IF NOT FOUND` ו-`IF v_last_weight <= ...` |
+| DML | `UPDATE public.trainee_goal SET is_achieved = 1` |
+
+```sql
+CREATE OR REPLACE PROCEDURE public.proc_award_achieved_goals()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_goal_rec   RECORD;
+    v_last_weight   numeric(5,2);
+    v_last_fat      numeric(4,1);
+    v_updated_count INT := 0;
+    v_error_count   INT := 0;
+BEGIN
+    FOR v_goal_rec IN
+        SELECT tg.goal_id, tg.user_id, tg.target_date,
+               tg.target_weight_kg, tg.target_fat_percentage, tg.is_achieved
+        FROM public.trainee_goal tg
+        WHERE tg.is_achieved = 0
+          AND tg.target_date <= DATE '2024-01-01' + INTERVAL '365 days'
+    LOOP
+        BEGIN
+            SELECT bm.weight_kg, bm.fat_percentage
+            INTO v_last_weight, v_last_fat
+            FROM public.body_measurement bm
+            WHERE bm.user_id = v_goal_rec.user_id
+              AND bm.measurement_date <= v_goal_rec.target_date
+            ORDER BY bm.measurement_date DESC
+            LIMIT 1;
+
+            IF NOT FOUND THEN
+                RAISE EXCEPTION 'No measurement found for user % before target_date %',
+                    v_goal_rec.user_id, v_goal_rec.target_date;
+            END IF;
+
+            IF v_last_weight <= v_goal_rec.target_weight_kg AND
+               v_last_fat <= v_goal_rec.target_fat_percentage THEN
+                UPDATE public.trainee_goal
+                SET is_achieved = 1
+                WHERE goal_id = v_goal_rec.goal_id;
+
+                v_updated_count := v_updated_count + 1;
+                -- התיקון בוצע בשורה הבאה: נוסף % עבור המשתנה לפני ה-%%
+                RAISE NOTICE 'Goal % for user % ACHIEVED (weight: %, fat: % %%)',
+                    v_goal_rec.goal_id, v_goal_rec.user_id, v_last_weight, v_last_fat;
+            END IF;
+
+        EXCEPTION
+            WHEN OTHERS THEN
+                v_error_count := v_error_count + 1;
+                RAISE NOTICE 'Skipping goal % for user %: %',
+                    v_goal_rec.goal_id, v_goal_rec.user_id, SQLERRM;
+        END;
+    END LOOP;
+
+    RAISE NOTICE 'proc_award_achieved_goals done. Updated: %, Skipped: %.', v_updated_count, v_error_count;
+END;
+$$;
+```
+
+<hr />
+
+## 🔢 פונקציה 1: סטטיסטיקות אימון למשתמש
+
+**קובץ:** `function1.sql` | **קריאה:** `SELECT * FROM public.fn_user_workout_stats(1);`
+
+פונקציה המחשבת ומחזירה שורת סיכום אחת עם כל הסטטיסטיקות של משתמש מיומני האימון שלו.
+
+**אלמנטים של PL/pgSQL:**
+
+| אלמנט | יישום |
+| :--- | :--- |
+| Implicit Cursor | `SELECT ... INTO` עם פונקציות צבירה (`COUNT`, `SUM`, `AVG`, `MAX`) |
+| Branching | `IF v_total_sessions = 0 THEN RAISE NOTICE` |
+| Record Variables | 7 משתני `DECLARE` נפרדים המאוכלסים בשאילתה אחת |
+| RETURNS TABLE | מבנה טבלאי עם 7 שדות מוגדרים |
+
+```sql
+CREATE OR REPLACE FUNCTION public.fn_user_workout_stats(p_user_id INT)
+RETURNS TABLE(
+    total_sessions     INT,
+    total_minutes      numeric(10,2),
+    total_calories     BIGINT,
+    avg_heart_rate     numeric(6,2),
+    avg_rating         numeric(4,2),
+    best_rating        INT,
+    most_recent_log    DATE
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total_sessions  INT;
+    v_total_minutes   numeric(10,2);
+    v_total_calories  BIGINT;
+    v_avg_heart_rate  numeric(6,2);
+    v_avg_rating      numeric(4,2);
+    v_best_rating     INT;
+    v_most_recent     DATE;
+BEGIN
+    SELECT
+        COUNT(*)::INT,
+        COALESCE(SUM(duration_minutes), 0),
+        COALESCE(SUM(total_calories_burned)::BIGINT, 0),
+        COALESCE(ROUND(AVG(average_heart_rate), 2), 0),
+        COALESCE(ROUND(AVG(trainee_feedback_rating), 2), 0),
+        COALESCE(MAX(trainee_feedback_rating), 0),
+        MAX(log_date)
+    INTO
+        v_total_sessions, v_total_minutes, v_total_calories,
+        v_avg_heart_rate, v_avg_rating, v_best_rating, v_most_recent
+    FROM public.workout_log
+    WHERE user_id = p_user_id;
+
+    IF v_total_sessions = 0 THEN
+        RAISE NOTICE 'No workout logs found for user_id %.', p_user_id;
+    END IF;
+
+    total_sessions  := v_total_sessions;
+    total_minutes   := v_total_minutes;
+    total_calories  := v_total_calories;
+    avg_heart_rate  := v_avg_heart_rate;
+    avg_rating      := v_avg_rating;
+    best_rating     := v_best_rating;
+    most_recent_log := v_most_recent;
+
+    RETURN NEXT;
+END;
+$$;
+```
+
+<hr />
+
+## 🔢 פונקציה 2: היסטוריית מדידות גוף (Ref Cursor)
+
+**קובץ:** `function2.sql` | **קריאה:** ראה `main_program2.sql`
+
+פונקציה המחזירה **Ref Cursor** המכיל את כל היסטוריית המדידות של מתאמן, כולל חישוב הפרש המשקל בין מדידה ומדידה באמצעות פונקציית חלון `LAG()`.
+
+**אלמנטים של PL/pgSQL:**
+
+| אלמנט | יישום |
+| :--- | :--- |
+| Explicit Cursor | לולאה פנימית הסורקת מדידות ומדפיסה הודעה עבור מדידות מעל 100 ק"ג |
+| Record | `v_meas_rec RECORD` בתוך הלולאה הפנימית |
+| Branching | `IF v_meas_rec.weight_kg > 100 THEN RAISE NOTICE` |
+| Ref Cursor | `OPEN v_ref FOR SELECT ...` עם `LAG()` — מוחזר לקורא |
+
+```sql
+CREATE OR REPLACE FUNCTION public.fn_trainee_progress_cursor(p_user_id INT)
+RETURNS refcursor
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_ref refcursor := 'trainee_progress_cursor';
+    v_meas_rec  RECORD;
+    v_explicit_cursor CURSOR FOR
+        SELECT measurement_id, measurement_date, weight_kg
+        FROM public.body_measurement
+        WHERE user_id = p_user_id
+        ORDER BY measurement_date;
+BEGIN
+    FOR v_meas_rec IN v_explicit_cursor LOOP
+        IF v_meas_rec.weight_kg > 100 THEN
+            RAISE NOTICE 'Measurement % on % is heavy: % kg',
+                v_meas_rec.measurement_id,
+                v_meas_rec.measurement_date,
+                v_meas_rec.weight_kg;
+        END IF;
+    END LOOP;
+
+    OPEN v_ref FOR
+        SELECT
+            bm.measurement_date,
+            bm.weight_kg,
+            bm.fat_percentage,
+            bm.muscle_mass_kg,
+            bm.bmi_score,
+            bm.waist_circumference_cm,
+            LAG(bm.weight_kg) OVER (ORDER BY bm.measurement_date) AS prev_weight,
+            ROUND(bm.weight_kg - LAG(bm.weight_kg) OVER (ORDER BY bm.measurement_date), 2) AS weight_delta
+        FROM public.body_measurement bm
+        WHERE bm.user_id = p_user_id
+        ORDER BY bm.measurement_date;
+
+    RETURN v_ref;
+END;
+$$;
+```
+
+<hr />
+
+## 🚀 תוכנית ראשית 1
+
+**קובץ:** `main_program1.sql` | **הרצה:** הדבקה ישירה ב-Supabase SQL Editor
+
+בלוק אנונימי (`DO $$`) המשמש כ"מנהל תהליכים" הקורא לפרוצדורה ולפונקציה ומדפיס דוח מסכם.
+
+**זרימת הביצוע:**
+
+1. קריאה ל-`proc_extend_expiring_lockers` באמצעות `CALL`.
+2. קריאה ל-`fn_user_workout_stats` עבור `user_id = 1`, שמירת התוצאה ב-`RECORD`.
+3. הסתעפות `IF/ELSIF/ELSE` הקובעת רמת פעילות: `INACTIVE` / `BEGINNER` / `REGULAR` / `VETERAN`.
+4. הדפסת דוח מפורט באמצעות `RAISE NOTICE`.
+
+**אלמנטים של PL/pgSQL:** DML (CALL), Record, Branching (IF/ELSIF/ELSE), Implicit Cursor (SELECT INTO), Raise Notice.
+
+```sql
+DO $$
+DECLARE
+    v_stats_rec RECORD;
+    v_target_user_id INT := 1;
+    v_label TEXT;
+BEGIN
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'Running procedure: proc_extend_expiring_lockers';
+    RAISE NOTICE '========================================';
+
+    CALL public.proc_extend_expiring_lockers();
+
+    RAISE NOTICE '';
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'Running function: fn_user_workout_stats for user_id = %', v_target_user_id;
+    RAISE NOTICE '========================================';
+
+    SELECT * INTO v_stats_rec
+    FROM public.fn_user_workout_stats(v_target_user_id);
+
+    IF v_stats_rec.total_sessions = 0 THEN
+        v_label := 'INACTIVE';
+    ELSIF v_stats_rec.total_sessions < 5 THEN
+        v_label := 'BEGINNER';
+    ELSIF v_stats_rec.total_sessions < 20 THEN
+        v_label := 'REGULAR';
+    ELSE
+        v_label := 'VETERAN';
+    END IF;
+
+    RAISE NOTICE 'User % Workout Summary:', v_target_user_id;
+    RAISE NOTICE '  Status         : %', v_label;
+    RAISE NOTICE '  Total Sessions : %', v_stats_rec.total_sessions;
+    RAISE NOTICE '  Total Minutes  : %', v_stats_rec.total_minutes;
+    RAISE NOTICE '  Total Calories : %', v_stats_rec.total_calories;
+    RAISE NOTICE '  Avg Heart Rate : %', v_stats_rec.avg_heart_rate;
+    RAISE NOTICE '  Avg Rating     : %', v_stats_rec.avg_rating;
+    RAISE NOTICE '  Best Rating    : %', v_stats_rec.best_rating;
+    RAISE NOTICE '  Last Workout   : %', v_stats_rec.most_recent_log;
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'main_program1 finished successfully.';
+END;
+$$;
+```
+
+<hr />
+
+## 🚀 תוכנית ראשית 2
+
+**קובץ:** `main_program2.sql` | **הרצה:** הדבקה ישירה ב-Supabase SQL Editor
+
+בלוק אנונימי שני המדגים עיבוד מלא של **Ref Cursor** בתוך לולאה.
+
+**זרימת הביצוע:**
+
+1. קריאה ל-`proc_award_achieved_goals` באמצעות `CALL`.
+2. קריאה ל-`fn_trainee_progress_cursor` עבור `user_id = 1`, קבלת `refcursor`.
+3. לולאת `LOOP / FETCH / EXIT WHEN NOT FOUND` — איטרציה שורה-שורה על תוצאות הסמן.
+4. הסתעפות המפרשת את `weight_delta` לסטטוס: `FIRST RECORD` / `LOSING` / `GAINING` / `STABLE`.
+5. בלוק `BEGIN / EXCEPTION / END` סביב כל עיבוד הסמן לטיפול בשגיאות.
+6. סגירת הסמן `CLOSE v_ref` בסיום מוצלח.
+
+**אלמנטים של PL/pgSQL:** DML (CALL), Ref Cursor, Record, Loop (FETCH), Branching, Exception Handling, Raise Notice.
+
+```sql
+DO $$
+DECLARE
+    v_ref        refcursor;
+    v_row        RECORD;
+    v_row_count  INT := 0;
+    v_target_user_id INT := 1;
+    v_trend TEXT;
+BEGIN
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'Running procedure: proc_award_achieved_goals';
+    RAISE NOTICE '========================================';
+
+    CALL public.proc_award_achieved_goals();
+
+    RAISE NOTICE '';
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'Running function: fn_trainee_progress_cursor for user_id = %', v_target_user_id;
+    RAISE NOTICE '========================================';
+
+    BEGIN
+        v_ref := public.fn_trainee_progress_cursor(v_target_user_id);
+
+        LOOP
+            FETCH v_ref INTO v_row;
+            EXIT WHEN NOT FOUND;
+
+            v_row_count := v_row_count + 1;
+
+            IF v_row.weight_delta IS NULL THEN
+                v_trend := 'FIRST RECORD';
+            ELSIF v_row.weight_delta < 0 THEN
+                v_trend := 'LOSING';
+            ELSIF v_row.weight_delta > 0 THEN
+                v_trend := 'GAINING';
+            ELSE
+                v_trend := 'STABLE';
+            END IF;
+
+            -- התיקון בוצע כאן: Fat: % %%
+            RAISE NOTICE '[Row %] Date: % | Weight: % kg | Fat: % %% | BMI: % | Delta: % kg | Trend: %',
+                v_row_count,
+                v_row.measurement_date,
+                v_row.weight_kg,
+                v_row.fat_percentage,
+                v_row.bmi_score,
+                COALESCE(v_row.weight_delta::TEXT, 'N/A'),
+                v_trend;
+        END LOOP;
+
+        CLOSE v_ref;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE NOTICE 'Error while processing refcursor for user %: %', v_target_user_id, SQLERRM;
+    END;
+
+    IF v_row_count = 0 THEN
+        RAISE NOTICE 'No body measurements found for user_id %.', v_target_user_id;
+    ELSE
+        RAISE NOTICE 'Total measurement rows processed: %', v_row_count;
+    END IF;
+
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'main_program2 finished successfully.';
+END;
+$$;
 ```
