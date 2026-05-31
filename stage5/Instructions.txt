@@ -1,0 +1,26 @@
+# Step 1: Install dependencies
+
+Open **Terminal / PowerShell** in the `stage5/` directory and run:
+```bash
+pip install -r requirements.txt
+```
+
+
+# Step 2: Check `.env` file
+
+Make sure that the `.env` file contains the correct connection information (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT).
+
+
+# Step 3: Run the application
+```bash
+cd stage5/app
+python main.py
+```
+
+
+# Note: `python main.py` must be run from the `stage5/app/` directory so that the `.env` file path is detected correctly.
+
+# Minimum requirements
+* Python 3.9 or higher.
+* Active internet connection (for Supabase connection).
+* Operating system: Windows / macOS / Linux.
