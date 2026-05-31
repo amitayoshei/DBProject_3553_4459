@@ -1429,7 +1429,8 @@ stage5/
 │   ├── crud_subscriptions.py      # CRUD מלא לטבלת subscription
 │   └── advanced_operations.py    # שאילתות מורכבות + הרצת פרוצדורות
 ├── images/                        # תיקיית צילומי מסך
-└── requirements.txt               # תלויות Python
+├── requirements.txt               # תלויות Python
+└── instructions.txt               # הוראות הפעלה
 ```
 
 **עקרונות ארכיטקטורה שיושמו:**
